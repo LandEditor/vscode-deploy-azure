@@ -3,6 +3,14 @@
 		"*"
 	],
 	"aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
+	"author": {
+		"email": "Land@Playform.Cloud",
+		"name": "Land",
+		"url": "HTTPS://Land.Playform.Cloud"
+	},
+	"bugs": {
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/LandDeployAzure/issues"
+	},
 	"contributes": {
 		"commands": [
 			{
@@ -87,6 +95,7 @@
 	"description": "Generating CI/CD pipelines to Azure from GitHub and Azure Repo",
 	"devDependencies": {
 		"@playform/build": "0.0.7",
+		"@playform/document": "0.0.6",
 		"@types/fs-extra": "11.0.4",
 		"@types/glob": "8.1.0",
 		"@types/js-yaml": "4.0.9",
@@ -109,13 +118,25 @@
 		"color": "#D4DCEC",
 		"theme": "light"
 	},
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/LandDeployAzure#readme",
 	"icon": "assets/deployToAzure.png",
+	"license": "SEE LICENSE IN LICENSE",
 	"main": "./out/extension",
 	"name": "azure-deploy",
+	"private": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+HTTPS://github.com/CodeEditorLand/LandDeployAzure.git"
+	},
 	"scripts": {
 		"Document": "Document 'Source/**/*.ts'",
 		"compile": "tsc -p ./ && node copyStaticFiles.js",
 		"postinstall": "node ./node_modules/vscode/bin/install",
 		"prepublishOnly": "Build 'Source/**/*.ts'"
-	}
+	},
+	"type": "module",
+	"version": "0.0.1"
 }
