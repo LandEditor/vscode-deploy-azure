@@ -237,7 +237,7 @@ export async function getTemplateParameters(templateId: string): Promise<Extende
         parameters = await serviceClient.getTemplateParameters(templateId);
         return parameters;
     }
-    catch (e) {
+    catch (_Error) {
         telemetryHelper.logError(Layer, TracePoints.UnableToGetTemplateParameters, e);
         throw new Error(Messages.UnableToGetTemplateParameters);
     }
