@@ -4,6 +4,9 @@
 	"version": "0.0.1",
 	"private": false,
 	"description": "Generating CI/CD pipelines to Azure from GitHub and Azure Repo",
+	"keywords": [
+		"land"
+	],
 	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/LandDeployAzure#readme",
 	"bugs": {
 		"url": "HTTPS://GitHub.Com/CodeEditorLand/LandDeployAzure/issues"
