@@ -44,7 +44,7 @@ export class RepoAnalysisHelper {
                 return null;
             }
         }
-        catch (_Error) {
+        catch (e) {
             //Return empty if Repo Analysis fails
             telemetryHelper.logError(Layer, TracePoints.RepoAnalysisFailed, e);
             return null;

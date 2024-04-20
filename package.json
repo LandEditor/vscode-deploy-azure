@@ -1,34 +1,8 @@
 {
-	"name": "azure-deploy",
-	"displayName": "Deploy to Azure",
-	"version": "0.0.1",
-	"private": false,
-	"description": "Generating CI/CD pipelines to Azure from GitHub and Azure Repo",
-	"keywords": [
-		"land"
+	"activationEvents": [
+		"*"
 	],
-	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/LandDeployAzure#readme",
-	"bugs": {
-		"url": "HTTPS://GitHub.Com/CodeEditorLand/LandDeployAzure/issues"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+HTTPS://github.com/CodeEditorLand/LandDeployAzure.git"
-	},
-	"license": "SEE LICENSE IN LICENSE",
-	"author": {
-		"name": "Land",
-		"email": "Land@Playform.Cloud",
-		"url": "HTTPS://Land.Playform.Cloud"
-	},
-	"type": "module",
-	"main": "./out/extension",
-	"scripts": {
-		"Document": "Document 'Source/**/*.ts'",
-		"compile": "tsc -p ./ && node copyStaticFiles.js",
-		"postinstall": "node ./node_modules/vscode/bin/install",
-		"prepublishOnly": "Build 'Source/**/*.ts'"
-	},
+	"aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
 	"contributes": {
 		"commands": [
 			{
@@ -95,9 +69,6 @@
 			]
 		}
 	},
-	"activationEvents": [
-		"*"
-	],
 	"dependencies": {
 		"fs-extra": "11.2.0",
 		"js-yaml": "4.1.0",
@@ -113,9 +84,9 @@
 		"uuid": "9.0.1",
 		"yaml-language-server": "1.14.0"
 	},
+	"description": "Generating CI/CD pipelines to Azure from GitHub and Azure Repo",
 	"devDependencies": {
 		"@playform/build": "0.0.7",
-		"@playform/document": "0.0.6",
 		"@types/fs-extra": "11.0.4",
 		"@types/glob": "8.1.0",
 		"@types/js-yaml": "4.0.9",
@@ -130,16 +101,20 @@
 		"nock": "13.5.4",
 		"typescript-tslint-plugin": "0.5.5"
 	},
+	"displayName": "Deploy to Azure",
 	"extensionDependencies": [
 		"ms-vscode.azure-account"
 	],
-	"publishConfig": {
-		"access": "public"
-	},
-	"icon": "assets/deployToAzure.png",
 	"galleryBanner": {
 		"color": "#D4DCEC",
 		"theme": "light"
 	},
-	"aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217"
+	"icon": "assets/deployToAzure.png",
+	"main": "./out/extension",
+	"name": "azure-deploy",
+	"scripts": {
+		"Document": "Document 'Source/**/*.ts'",
+		"compile": "tsc -p ./ && node copyStaticFiles.js",
+		"prepublishOnly": "Build 'Source/**/*.ts'"
+	}
 }
