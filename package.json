@@ -1,27 +1,7 @@
 {
 	"name": "azure-deploy",
 	"displayName": "Deploy to Azure",
-	"version": "0.0.1",
-	"private": false,
 	"description": "Generating CI/CD pipelines to Azure from GitHub and Azure Repo",
-	"keywords": [
-		"land"
-	],
-	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/LandDeployAzure#readme",
-	"bugs": {
-		"url": "HTTPS://GitHub.Com/CodeEditorLand/LandDeployAzure/issues"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+HTTPS://github.com/CodeEditorLand/LandDeployAzure.git"
-	},
-	"license": "SEE LICENSE IN LICENSE",
-	"author": {
-		"name": "🛬 Land —",
-		"email": "Land@PlayForm.Cloud",
-		"url": "HTTPS://Land.PlayForm.Cloud"
-	},
-	"type": "module",
 	"main": "./out/extension",
 	"scripts": {
 		"Document": "Document 'Source/**/*.ts'",
@@ -114,7 +94,6 @@
 	},
 	"devDependencies": {
 		"@playform/build": "0.0.7",
-		"@playform/document": "0.0.6",
 		"@types/fs-extra": "11.0.4",
 		"@types/glob": "8.1.0",
 		"@types/js-yaml": "4.0.9",
@@ -132,9 +111,6 @@
 	"extensionDependencies": [
 		"ms-vscode.azure-account"
 	],
-	"publishConfig": {
-		"access": "public"
-	},
 	"icon": "assets/deployToAzure.png",
 	"galleryBanner": {
 		"color": "#D4DCEC",
