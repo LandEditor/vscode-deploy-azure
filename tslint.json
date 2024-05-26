@@ -1,17 +1,12 @@
 {
-	"rulesDirectory": [
-		"node_modules/tslint-microsoft-contrib"
-	],
+	"rulesDirectory": ["node_modules/tslint-microsoft-contrib"],
 	"rules": {
 		"no-string-throw": true,
 		"no-unused-expression": true,
 		"no-duplicate-variable": true,
 		"curly": true,
 		"class-name": true,
-		"semicolon": [
-			true,
-			"always"
-		],
+		"semicolon": [true, "always"],
 		"triple-equals": false,
 		"no-banned-terms": true,
 		"no-delete-expression": true,
@@ -59,8 +54,5 @@
 		"non-literal-fs-path": false
 	},
 	"defaultSeverity": "warning",
-	"extends": [
-		"tslint-microsoft-contrib/recommended",
-		"tslint:recommended"
-	]
+	"extends": ["tslint-microsoft-contrib/recommended", "tslint:recommended"]
 }
