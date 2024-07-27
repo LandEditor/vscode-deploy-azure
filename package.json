@@ -1,8 +1,11 @@
 {
-	"activationEvents": [
-		"*"
-	],
-	"aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
+	"name": "azure-deploy",
+	"displayName": "Deploy to Azure",
+	"description": "Generating CI/CD pipelines to Azure from GitHub and Azure Repo",
+	"main": "./out/extension",
+	"scripts": {
+		"compile": "tsc -p ./ && node copyStaticFiles.js"
+	},
 	"contributes": {
 		"commands": [
 			{
@@ -69,6 +72,9 @@
 			]
 		}
 	},
+	"activationEvents": [
+		"*"
+	],
 	"dependencies": {
 		"fs-extra": "^9.0.1",
 		"js-yaml": "^3.13.1",
@@ -84,7 +90,6 @@
 		"uuid": "^3.3.2",
 		"yaml-language-server": "^0.8.0"
 	},
-	"description": "Generating CI/CD pipelines to Azure from GitHub and Azure Repo",
 	"devDependencies": {
 		"@types/fs-extra": "4.0.5",
 		"@types/glob": "^7.1.1",
@@ -100,18 +105,13 @@
 		"nock": "^13.0.2",
 		"typescript-tslint-plugin": "^0.5.5"
 	},
-	"displayName": "Deploy to Azure",
 	"extensionDependencies": [
 		"ms-vscode.azure-account"
 	],
+	"icon": "assets/deployToAzure.png",
 	"galleryBanner": {
 		"color": "#D4DCEC",
 		"theme": "light"
 	},
-	"icon": "assets/deployToAzure.png",
-	"main": "./out/extension",
-	"name": "azure-deploy",
-	"scripts": {
-		"compile": "tsc -p ./ && node copyStaticFiles.js"
-	}
+	"aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217"
 }
