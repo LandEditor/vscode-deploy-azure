@@ -82,7 +82,7 @@
 		"typed-rest-client": "2.0.2",
 		"underscore": "1.13.7",
 		"uuid": "10.0.0",
-		"yaml-language-server": "1.15.1-f039273.0"
+		"yaml-language-server": "1.15.0"
 	},
 	"description": "Generating CI/CD pipelines to Azure from GitHub and Azure Repo",
 	"devDependencies": {
@@ -97,7 +97,7 @@
 		"assert": "2.1.0",
 		"chai": "5.1.1",
 		"glob": "11.0.0",
-		"nock": "14.0.0-beta.11",
+		"nock": "13.5.5",
 		"typescript-tslint-plugin": "1.0.2"
 	},
 	"displayName": "Deploy to Azure",
