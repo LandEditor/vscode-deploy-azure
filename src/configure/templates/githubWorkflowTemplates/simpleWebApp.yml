@@ -1,0 +1,20 @@
+on:
+  push:
+    branches:
+      - {{{ sourceRepository.branch }}}
+
+name: Package and deploy simple web app
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    # checkout the repo
+    - uses: actions/checkout@master
+
+    # deploy web app using publish profile credentials
+    - uses: azure/webapps-deploy@v1
+      with:
+        app-name: {{{ targetResource.resource.name }}}
+        package: {{{ workingDirectory }}}
+        publish-profile: {{=<% %>=}}${{ secrets.<% targetResource.serviceConnectionId %> }}<%={{ }}=%>
