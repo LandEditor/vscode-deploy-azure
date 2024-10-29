@@ -81,7 +81,7 @@
 		"tweetsodium": "0.0.6",
 		"typed-rest-client": "2.1.0",
 		"underscore": "1.13.7",
-		"uuid": "11.0.1",
+		"uuid": "11.0.2",
 		"yaml-language-server": "1.15.0"
 	},
 	"description": "Generating CI/CD pipelines to Azure from GitHub and Azure Repo",
@@ -90,7 +90,7 @@
 		"@types/glob": "8.1.0",
 		"@types/js-yaml": "4.0.9",
 		"@types/mustache": "4.2.5",
-		"@types/node": "22.8.1",
+		"@types/node": "22.8.2",
 		"@types/q": "1.5.8",
 		"@types/underscore": "1.13.0",
 		"ajv": "8.17.1",
