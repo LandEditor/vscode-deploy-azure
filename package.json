@@ -81,7 +81,7 @@
 		"tweetsodium": "0.0.6",
 		"typed-rest-client": "2.1.0",
 		"underscore": "1.13.7",
-		"uuid": "11.0.2",
+		"uuid": "11.0.3",
 		"yaml-language-server": "1.15.0"
 	},
 	"description": "Generating CI/CD pipelines to Azure from GitHub and Azure Repo",
@@ -97,7 +97,7 @@
 		"assert": "2.1.0",
 		"chai": "5.1.2",
 		"glob": "11.0.0",
-		"nock": "13.5.5",
+		"nock": "13.5.6",
 		"typescript-tslint-plugin": "1.0.2"
 	},
 	"displayName": "Deploy to Azure",
