@@ -22,6 +22,7 @@ export class ArmRestClient {
 
 	public async getAcrCredentials(acrId: string): Promise<any> {
 		let parsedResourceId = new ParsedAzureResourceId(acrId);
+
 		return this.sendRequest(
 			this.resourceManagerEndpointUrl +
 				`/subscriptions/${parsedResourceId.subscriptionId}/resourceGroups/${parsedResourceId.resourceGroup}/providers/Microsoft.ContainerRegistry/registries/${parsedResourceId.resourceName}/listCredentials`,
@@ -33,6 +34,7 @@ export class ArmRestClient {
 
 	public async getAksKubeConfig(clusterId: string): Promise<any> {
 		let parsedResourceId = new ParsedAzureResourceId(clusterId);
+
 		return this.sendRequest(
 			this.resourceManagerEndpointUrl +
 				`/subscriptions/${parsedResourceId.subscriptionId}/resourceGroups/${parsedResourceId.resourceGroup}/providers/Microsoft.ContainerService/managedClusters/${parsedResourceId.resourceName}/listClusterAdminCredential`,

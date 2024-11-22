@@ -56,6 +56,7 @@ export interface TemplateParameter {
 	// tslint:disable-next-line:no-reserved-keywords
 	type: TemplateParameterType;
 	dataSourceId?: string;
+
 	defaultValue?: any;
 	options?: { key: string; value: any }[];
 }

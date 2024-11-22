@@ -16,8 +16,10 @@ export class ResourceSelectorFactory {
 		switch (targetType) {
 			case TargetResourceType.WebApp:
 				return new WebAppAzureResourceSelector();
+
 			case TargetResourceType.AKS:
 				return new AksAzureResourceSelector();
+
 			default:
 				throw new Error(Messages.ResourceNotSupported);
 		}
@@ -38,8 +40,10 @@ export class ResourceSelectorFactory {
 					tenantId,
 					subscriptionId,
 				);
+
 			case TargetResourceType.AKS:
 				return new AzureResourceClient(credentials, subscriptionId);
+
 			default:
 				throw new Error(Messages.ResourceNotSupported);
 		}

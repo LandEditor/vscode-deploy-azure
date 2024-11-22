@@ -44,6 +44,7 @@ export class AzureDevOpsHelper {
 		) {
 			let details =
 				AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl);
+
 			return `https://${details.organizationName}${AzureDevOpsHelper.VSOUrl}/${details.projectName}/_git/${details.repositoryName}`;
 		}
 
@@ -60,7 +61,9 @@ export class AzureDevOpsHelper {
 				remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) +
 					AzureDevOpsHelper.AzureReposUrl.length,
 			);
+
 			let parts = part.split("/").filter((value) => !!value);
+
 			if (parts.length !== 4) {
 				telemetryHelper.logError(
 					Layer,
@@ -69,6 +72,7 @@ export class AzureDevOpsHelper {
 						`RemoteUrlFormat: ${AzureDevOpsHelper.AzureReposUrl}, Parts: ${parts.slice(2).toString()}, Length: ${parts.length}`,
 					),
 				);
+
 				throw new Error(Messages.failedToDetermineAzureRepoDetails);
 			}
 			return {
@@ -81,10 +85,12 @@ export class AzureDevOpsHelper {
 				remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) +
 					AzureDevOpsHelper.VSOUrl.length,
 			);
+
 			let organizationName = remoteUrl.substring(
 				remoteUrl.indexOf("https://") + "https://".length,
 				remoteUrl.indexOf(".visualstudio.com"),
 			);
+
 			let parts = part.split("/").filter((value) => !!value);
 
 			if (
@@ -103,6 +109,7 @@ export class AzureDevOpsHelper {
 						`RemoteUrlFormat: ${AzureDevOpsHelper.VSOUrl}, Parts: ${parts.slice(1).toString()}, Length: ${parts.length}`,
 					),
 				);
+
 				throw new Error(Messages.failedToDetermineAzureRepoDetails);
 			}
 			return {
@@ -118,10 +125,13 @@ export class AzureDevOpsHelper {
 				remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0
 					? AzureDevOpsHelper.SSHAzureReposUrl
 					: AzureDevOpsHelper.SSHVsoReposUrl;
+
 			let part = remoteUrl.substr(
 				remoteUrl.indexOf(urlFormat) + urlFormat.length,
 			);
+
 			let parts = part.split("/").filter((value) => !!value);
+
 			if (parts.length !== 3) {
 				telemetryHelper.logError(
 					Layer,
@@ -130,6 +140,7 @@ export class AzureDevOpsHelper {
 						`RemoteUrlFormat: ${urlFormat}, Parts: ${parts.slice(2).toString()}, Length: ${parts.length}`,
 					),
 				);
+
 				throw new Error(Messages.failedToDetermineAzureRepoDetails);
 			}
 			return {
@@ -151,10 +162,12 @@ export class AzureDevOpsHelper {
 				pipelineName,
 				inputs,
 			);
+
 			let definition = await this.azureDevOpsClient.createBuildDefinition(
 				inputs.organizationName,
 				buildDefinitionPayload,
 			);
+
 			let build = await this.azureDevOpsClient.queueBuild(
 				inputs.organizationName,
 				this.getQueueBuildPayload(
@@ -163,6 +176,7 @@ export class AzureDevOpsHelper {
 					definition.project.id,
 				),
 			);
+
 			return build;
 		} catch (error) {
 			throw new Error(
@@ -183,7 +197,9 @@ export class AzureDevOpsHelper {
 			inputs.project.name,
 			HostedVS2017QueueName,
 		);
+
 		let repositoryProperties: BuildDefinitionRepositoryProperties = null;
+
 		let properties = { "source": "ms-azure-devops.azure-pipelines" };
 
 		if (
@@ -247,6 +263,7 @@ export class AzureDevOpsHelper {
 			organizationName,
 			projectName,
 		);
+
 		let queueId: number = queues.length > 0 ? queues[0].id : null;
 
 		for (let queue of queues) {
@@ -256,6 +273,7 @@ export class AzureDevOpsHelper {
 				queue.pool.name.toLowerCase() === poolName.toLowerCase()
 			) {
 				queueId = queue.id;
+
 				break;
 			}
 		}

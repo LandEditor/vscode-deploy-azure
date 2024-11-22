@@ -24,6 +24,7 @@ export async function activateConfigurePipeline(): Promise<AzureExtensionApiProv
 	let azureAccountExtension = vscode.extensions.getExtension(
 		"ms-vscode.azure-account",
 	);
+
 	if (!azureAccountExtension) {
 		throw new Error(Messages.azureAccountExntesionUnavailable);
 	}

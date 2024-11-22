@@ -11,6 +11,7 @@ import { IAzureResourceSelector } from "./IAzureResourceSelector";
 export class WebAppAzureResourceSelector implements IAzureResourceSelector {
 	async getAzureResource(inputs: WizardInputs): Promise<GenericResource> {
 		let controlProvider = new ControlProvider();
+
 		let appServiceClient = new AppServiceClient(
 			inputs.azureSession.credentials,
 			inputs.azureSession.environment,
@@ -21,6 +22,7 @@ export class WebAppAzureResourceSelector implements IAzureResourceSelector {
 		let webAppKinds = inputs.potentialTemplates.map(
 			(template) => template.targetKind,
 		);
+
 		let selectedResource: QuickPickItemWithData =
 			await controlProvider.showQuickPick(
 				Messages.selectTargetResource,
@@ -32,6 +34,7 @@ export class WebAppAzureResourceSelector implements IAzureResourceSelector {
 				{ placeHolder: Messages.selectTargetResource },
 				TelemetryKeys.AzureResourceListCount,
 			);
+
 		if (
 			await appServiceClient.isScmTypeSet(
 				(<GenericResource>selectedResource.data).id,
@@ -40,6 +43,7 @@ export class WebAppAzureResourceSelector implements IAzureResourceSelector {
 			await openBrowseExperience(
 				(<GenericResource>selectedResource.data).id,
 			);
+
 			throw new Error(Messages.setupAlreadyConfigured);
 		}
 		return <GenericResource>selectedResource.data;

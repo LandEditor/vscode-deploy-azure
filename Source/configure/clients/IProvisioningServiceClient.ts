@@ -6,6 +6,7 @@ export interface IProvisioningServiceClient {
 		githubOrg: string,
 		repositoryId: string,
 	): Promise<ProvisioningConfiguration>;
+
 	getProvisioningConfiguration(
 		jobId: string,
 		githubOrg: string,

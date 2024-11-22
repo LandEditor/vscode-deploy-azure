@@ -41,6 +41,7 @@ import { TracePoints } from "../resources/tracePoints";
 import { Configurer } from "./configurerBase";
 
 const uuid = require("uuid/v4");
+
 const Layer = "LocalGitHubWorkflowConfigurer";
 
 export class LocalGitHubWorkflowConfigurer implements Configurer {
@@ -60,6 +61,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 			inputs.sourceRepository.remoteUrl,
 		);
 		inputs.isNewOrganization = false;
+
 		if (!inputs.sourceRepository.remoteUrl) {
 			const githubOrganizations =
 				await this.githubClient.listOrganizations();
@@ -75,6 +77,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 						TelemetryKeys.OrganizationListCount,
 					);
 				inputs.organizationName = selectedOrganization.label;
+
 				const isUserAccount = githubOrganizations.find(
 					(x) => x.login === selectedOrganization.label,
 				).isUserAccount;
@@ -114,18 +117,21 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 					);
 				} catch (error) {
 					vscode.window.showErrorMessage(error.message);
+
 					throw error;
 				}
 			} else {
 				vscode.window.showErrorMessage(
 					Messages.createGitHubOrganization,
 				);
+
 				const error = new Error(Messages.createGitHubOrganization);
 				telemetryHelper.logError(
 					Layer,
 					TracePoints.NoGitHubOrganizationExists,
 					error,
 				);
+
 				throw error;
 			}
 		}
@@ -164,12 +170,14 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 							) {
 								case AzureConnectionType.None:
 									return null;
+
 								case AzureConnectionType.AzureRMPublishProfile:
 									return await (
 										azureResourceClient as AppServiceClient
 									).getWebAppPublishProfileXml(
 										inputs.targetResource.resource.id,
 									);
+
 								case AzureConnectionType.AzureRMServicePrincipal:
 								default:
 									return await this.getAzureSPNSecret(inputs);
@@ -180,6 +188,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 								TracePoints.AzureServiceConnectionCreateFailure,
 								error,
 							);
+
 							throw error;
 						}
 					},
@@ -188,6 +197,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 			if (!!azureConnectionSecret) {
 				inputs.targetResource.serviceConnectionId =
 					"AZURE_CREDENTIALS_" + uuid().substr(0, 8);
+
 				try {
 					await vscode.window.withProgress(
 						{
@@ -209,6 +219,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 						TracePoints.AzureServiceConnectionCreateFailure,
 						error,
 					);
+
 					throw error;
 				}
 			}
@@ -223,13 +234,16 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 		inputs: WizardInputs,
 	): Promise<string> {
 		let secret: string = null;
+
 		switch (type) {
 			case TemplateAssetType.GitHubARM:
 			case TemplateAssetType.GitHubAKSKubeConfig:
 			case TemplateAssetType.GitHubRegistryUsername:
 			case TemplateAssetType.GitHubRegistryPassword:
 				secret = data;
+
 				break;
+
 			default:
 				throw new Error(
 					utils.format(
@@ -253,6 +267,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 	): Promise<string> {
 		// Create .github directory
 		let workflowDirectoryPath = path.join(".github", "workflows");
+
 		if (!pipelineFileName) {
 			pipelineFileName = "workflow.yml";
 		}
@@ -273,6 +288,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 			inputs.pipelineConfiguration.workingDirectory,
 			"manifests",
 		);
+
 		try {
 			return await this.getPathToFile(
 				localGitRepoHelper,
@@ -285,6 +301,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 				TracePoints.ManifestsFolderCreationFailed,
 				error,
 			);
+
 			throw error;
 		}
 	}
@@ -295,11 +312,13 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 		directory: string,
 	) {
 		let dirList = directory.split(path.sep);
+
 		let directoryPath: string = "";
 		directoryPath = await localGitRepoHelper.getGitRootDirectory();
 		dirList.forEach((dir) => {
 			try {
 				directoryPath = path.join(directoryPath, dir);
+
 				if (!fs.existsSync(directoryPath)) {
 					fs.mkdirSync(directoryPath);
 				}
@@ -312,6 +331,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 			directoryPath,
 		);
 		telemetryHelper.setTelemetry(TelemetryKeys.WorkflowFileName, fileName);
+
 		return path.join(directoryPath, fileName);
 	}
 
@@ -322,6 +342,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 	): Promise<string> {
 		while (!inputs.sourceRepository.commitId) {
 			let displayMessage = Messages.modifyAndCommitFile;
+
 			if (filesToCommit.length > 1) {
 				displayMessage = Messages.modifyAndCommitMultipleFiles;
 			}
@@ -370,6 +391,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 										error.message,
 									),
 								);
+
 								return null;
 							}
 						},
@@ -379,6 +401,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 					TelemetryKeys.PipelineDiscarded,
 					"true",
 				);
+
 				throw new UserCancelledError(Messages.operationCancelled);
 			}
 		}
@@ -388,6 +411,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 
 	public async createAndQueuePipeline(inputs: WizardInputs): Promise<string> {
 		this.queuedPipelineUrl = `https://github.com/${inputs.sourceRepository.repositoryId}/commit/${inputs.sourceRepository.commitId}/checks`;
+
 		return this.queuedPipelineUrl;
 	}
 
@@ -415,6 +439,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 						await LocalGitRepoHelper.GetHelperInstance(
 							inputs.sourceRepository.localPath,
 						).getGitRootDirectory();
+
 					let configPath = path.relative(
 						repositoryPath,
 						inputs.pipelineConfiguration.filePath,
@@ -426,6 +451,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 							"utf8",
 						),
 					);
+
 					if (!!doc["name"]) {
 						metadata["properties"]["configName"] = `${doc["name"]}`;
 					}
@@ -450,6 +476,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 					"repoUrl": `https://github.com/${inputs.sourceRepository.repositoryId}`,
 					"branch": inputs.sourceRepository.branch,
 				};
+
 				let sourceControlPromise = (
 					azureResourceClient as AppServiceClient
 				).setSourceControl(
@@ -466,7 +493,9 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 				let authorName = await LocalGitRepoHelper.GetHelperInstance(
 					inputs.sourceRepository.localPath,
 				).getUsername();
+
 				let deployerName = "GITHUBACTION";
+
 				let updateDeploymentLogPromise = (
 					azureResourceClient as AppServiceClient
 				).publishDeploymentToAppService(
@@ -502,6 +531,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 							TargetResourceType.AKS,
 						).name
 					];
+
 				let workflowFileName = path.basename(
 					inputs.pipelineConfiguration.filePath,
 				);
@@ -552,15 +582,18 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 		scope?: string,
 	): Promise<string> {
 		scope = !scope ? inputs.targetResource.resource.id : scope;
+
 		let aadAppName = GraphHelper.generateAadApplicationName(
 			inputs.sourceRepository.remoteName,
 			"github",
 		);
+
 		let aadApp = await GraphHelper.createSpnAndAssignRole(
 			inputs.azureSession,
 			aadAppName,
 			scope,
 		);
+
 		return JSON.stringify({
 			"clientId": `${aadApp.appId}`,
 			"clientSecret": `${aadApp.secret}`,

@@ -24,20 +24,26 @@ export class GraphHelper {
 		scope: string,
 	): Promise<AadApplication> {
 		let graphCredentials = await this.getGraphToken(session);
+
 		let tokenCredentials = new TokenCredentials(
 			graphCredentials.accessToken,
 		);
+
 		let graphClient = new RestClient(tokenCredentials);
+
 		let tenantId = session.tenantId;
+
 		var aadApp: AadApplication;
 
 		return this.createAadApp(graphClient, aadAppName, tenantId)
 			.then((aadApplication) => {
 				aadApp = aadApplication;
+
 				return this.createSpn(graphClient, aadApp.appId, tenantId);
 			})
 			.then((spn) => {
 				aadApp.objectId = spn.objectId;
+
 				return this.createRoleAssignment(
 					session.credentials,
 					scope,
@@ -54,6 +60,7 @@ export class GraphHelper {
 					errorMessage = error;
 				} else {
 					errorMessage = !!error && error.message;
+
 					if (!errorMessage && error["odata.error"]) {
 						if (
 							typeof error["odata.error"]["message"] === "object"
@@ -79,16 +86,22 @@ export class GraphHelper {
 		projectName: string,
 	): string {
 		var spnLengthAllowed = 92;
+
 		var guid = uuid();
+
 		var projectName = projectName.replace(/[^a-zA-Z0-9_-]/g, "");
+
 		var accountName = accountName.replace(/[^a-zA-Z0-9_-]/g, "");
+
 		var spnName = accountName + "-" + projectName + "-" + guid;
+
 		if (spnName.length <= spnLengthAllowed) {
 			return spnName;
 		}
 
 		// 2 is subtracted for delimiter '-'
 		spnLengthAllowed = spnLengthAllowed - guid.length - 2;
+
 		if (
 			accountName.length > spnLengthAllowed / 2 &&
 			projectName.length > spnLengthAllowed / 2
@@ -121,6 +134,7 @@ export class GraphHelper {
 
 	public static async getAccessToken(session: AzureSession): Promise<string> {
 		const token = await this.getRefreshToken(session);
+
 		return token.accessToken;
 	}
 
@@ -132,6 +146,7 @@ export class GraphHelper {
 		session: AzureSession,
 	): Promise<TokenResponse> {
 		let refreshTokenResponse = await this.getRefreshToken(session);
+
 		return this.getResourceTokenFromRefreshToken(
 			session.environment,
 			refreshTokenResponse.refreshToken,
@@ -146,6 +161,7 @@ export class GraphHelper {
 	): Promise<Token> {
 		return new Promise<Token>((resolve, reject) => {
 			const credentials: any = session.credentials;
+
 			const environment = session.environment;
 			credentials.context.acquireToken(
 				environment.activeDirectoryResourceId,
@@ -175,6 +191,7 @@ export class GraphHelper {
 	): Promise<TokenResponse> {
 		return new Promise<TokenResponse>((resolve, reject) => {
 			const tokenCache = new MemoryCache();
+
 			const context = new AuthenticationContext(
 				`${environment.activeDirectoryEndpointUrl}${tenantId}`,
 				true,
@@ -217,6 +234,7 @@ export class GraphHelper {
 		tenantId: string,
 	): Promise<AadApplication> {
 		let secret = generateRandomPassword(20);
+
 		let startDate = new Date(Date.now());
 
 		return graphClient
@@ -293,8 +311,11 @@ export class GraphHelper {
 		objectId: string,
 	): Promise<any> {
 		let restClient = new RestClient(credentials);
+
 		let roleDefinitionId = `${scope}/providers/Microsoft.Authorization/roleDefinitions/${this.contributorRoleId}`;
+
 		let guid = uuid();
+
 		let roleAssignementFunction = () => {
 			return restClient.sendRequest<any>(<UrlBasedRequestPrepareOptions>{
 				url: `https://management.azure.com/${scope}/providers/Microsoft.Authorization/roleAssignments/${guid}`,

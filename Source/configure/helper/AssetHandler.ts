@@ -74,11 +74,13 @@ export class AssetHandler {
 										inputs.pipelineConfiguration.params[
 											"targetResource"
 										].id;
+
 									let aadAppName =
 										GraphHelper.generateAadApplicationName(
 											inputs.organizationName,
 											inputs.project.name,
 										);
+
 									let aadApp =
 										await GraphHelper.createSpnAndAssignRole(
 											inputs.azureSession,
@@ -87,6 +89,7 @@ export class AssetHandler {
 										);
 									// Use param name for first azure resource param
 									let serviceConnectionName = `${inputs.pipelineConfiguration.params[(inputs.pipelineConfiguration.template as LocalPipelineTemplate).parameters.find((parameter) => parameter.type === TemplateParameterType.GenericAzureResource).name]}-${UniqueResourceNameSuffix}`;
+
 									return await createAsset(
 										serviceConnectionName,
 										asset.type,
@@ -99,11 +102,14 @@ export class AssetHandler {
 										TracePoints.AzureServiceConnectionCreateFailure,
 										error,
 									);
+
 									throw error;
 								}
 							},
 						);
+
 					break;
+
 				case TemplateAssetType.AzureARMPublishProfileServiceConnection:
 					let targetWebAppResource =
 						TemplateParameterHelper.getParameterValueForTargetResourceType(
@@ -128,11 +134,14 @@ export class AssetHandler {
 										inputs.azureSession.tenantId,
 										inputs.subscriptionId,
 									);
+
 									let publishProfile =
 										await appServiceClient.getWebAppPublishProfileXml(
 											inputs.targetResource.resource.id,
 										);
+
 									let serviceConnectionName = `${targetWebAppResource.name}-${UniqueResourceNameSuffix}`;
+
 									return await createAsset(
 										serviceConnectionName,
 										asset.type,
@@ -145,10 +154,12 @@ export class AssetHandler {
 										TracePoints.AzureServiceConnectionCreateFailure,
 										error,
 									);
+
 									throw error;
 								}
 							},
 						);
+
 					break;
 				// uses azure resource client to get the required details, and then calls into configurer.createServiceConnection(serviceConnectionType, properties: property bag with all the required information that are needed/available to create service connection.)
 				case TemplateAssetType.AKSKubeConfigServiceConnection:
@@ -172,6 +183,7 @@ export class AssetHandler {
 									let armClient = new ArmRestClient(
 										inputs.azureSession,
 									);
+
 									let base64EncodedKubeConfig: {
 										kubeconfigs: Array<{
 											name: string;
@@ -180,10 +192,12 @@ export class AssetHandler {
 									} = await armClient.getAksKubeConfig(
 										targetAksResource.id,
 									);
+
 									let assetName =
 										AssetHandler.getSanitizedUniqueAssetName(
 											targetAksResource.name,
 										);
+
 									return await createAsset(
 										assetName,
 										asset.type,
@@ -201,11 +215,14 @@ export class AssetHandler {
 										TracePoints.AssetCreationFailure,
 										error,
 									);
+
 									throw error;
 								}
 							},
 						);
+
 					break;
+
 				case TemplateAssetType.ACRServiceConnection:
 					let targetAcrResource =
 						TemplateParameterHelper.getParameterValueForTargetResourceType(
@@ -226,6 +243,7 @@ export class AssetHandler {
 									let armClient = new ArmRestClient(
 										inputs.azureSession,
 									);
+
 									let registryCreds: {
 										username: string;
 										passwords: Array<{
@@ -235,10 +253,12 @@ export class AssetHandler {
 									} = await armClient.getAcrCredentials(
 										targetAcrResource.id,
 									);
+
 									let assetName =
 										AssetHandler.getSanitizedUniqueAssetName(
 											targetAcrResource.name,
 										);
+
 									return await createAsset(
 										assetName,
 										asset.type,
@@ -251,11 +271,14 @@ export class AssetHandler {
 										TracePoints.AssetCreationFailure,
 										error,
 									);
+
 									throw error;
 								}
 							},
 						);
+
 					break;
+
 				case TemplateAssetType.GitHubRegistryUsername:
 				case TemplateAssetType.GitHubRegistryPassword:
 					let acrResource =
@@ -277,6 +300,7 @@ export class AssetHandler {
 									let armClient = new ArmRestClient(
 										inputs.azureSession,
 									);
+
 									let registryCreds: {
 										username: string;
 										passwords: Array<{
@@ -286,10 +310,12 @@ export class AssetHandler {
 									} = await armClient.getAcrCredentials(
 										acrResource.id,
 									);
+
 									let assetName =
 										AssetHandler.getSanitizedUniqueAssetName(
 											acrResource.name,
 										);
+
 									if (
 										asset.type ===
 										TemplateAssetType.GitHubRegistryUsername
@@ -307,6 +333,7 @@ export class AssetHandler {
 												? registryCreds.passwords[0]
 														.value
 												: null;
+
 										if (!password) {
 											throw Messages.unableToFetchPasswordOfContainerRegistry;
 										}
@@ -324,14 +351,17 @@ export class AssetHandler {
 										TracePoints.AssetCreationFailure,
 										error,
 									);
+
 									throw error;
 								}
 							},
 						);
+
 					break;
 
 				case TemplateAssetType.File:
 					break;
+
 				case TemplateAssetType.GitHubARM:
 				case TemplateAssetType.GitHubARMPublishProfile:
 				default:
@@ -352,6 +382,7 @@ export class AssetHandler {
 	public static getSanitizedUniqueAssetName(assetName: string): string {
 		assetName = assetName + "_" + UniqueResourceNameSuffix;
 		assetName = assetName.replace(/\W/g, "");
+
 		return assetName;
 	}
 }

@@ -108,6 +108,7 @@ export class InputControl {
 		}
 		if (!!this.dataSource) {
 			var dependentInputs = this._getDataSourceInputs();
+
 			if (
 				this.controlType === ControlType.None ||
 				this.controlType === ControlType.InputBox
@@ -116,9 +117,11 @@ export class InputControl {
 					dependentInputs,
 					this.azureSession,
 				);
+
 				let errorMessage = await this.triggerControlValueValidations(
 					this.value,
 				);
+
 				if (errorMessage) {
 					vscode.window.showErrorMessage(errorMessage);
 					this.value = await this.controlProvider.showInputBox(
@@ -147,7 +150,9 @@ export class InputControl {
 								this.azureSession,
 							),
 					);
+
 				let selectedItem: QuickPickItemWithData;
+
 				while (1) {
 					selectedItem = await this.controlProvider.showQuickPick(
 						this.getInputControlId(),
@@ -156,10 +161,12 @@ export class InputControl {
 							placeHolder: this.inputDescriptor.name,
 						},
 					);
+
 					let errorMessage =
 						await this.triggerControlValueValidations(
 							selectedItem.data,
 						);
+
 					if (!errorMessage) {
 						break;
 					}
@@ -170,6 +177,7 @@ export class InputControl {
 		} else {
 			if (this.controlType === ControlType.QuickPick) {
 				var listItems: Array<{ label: string; data: any }> = [];
+
 				if (
 					!!this.inputDescriptor.possibleValues &&
 					this.inputDescriptor.possibleValues.length > 0
@@ -224,10 +232,12 @@ export class InputControl {
 		inputs?: StringMap<any>,
 	): any {
 		var properties = input.properties;
+
 		var value: string;
 
 		if (!!properties) {
 			value = properties[propertyName];
+
 			if (!!value && !!inputs && typeof value === "string") {
 				return MustacheHelper.render(value, { inputs: inputs });
 			} else if (!!value && !!inputs) {
@@ -247,7 +257,9 @@ export class InputControl {
 		value: string,
 	): Promise<string> {
 		this._valuePendingValuation = value;
+
 		let errorMessage = this.getStaticValidationsResult(value);
+
 		if (errorMessage) {
 			return Promise.resolve(errorMessage);
 		}
@@ -268,6 +280,7 @@ export class InputControl {
 						errorMessage = errorMessage.concat(result);
 					}
 				});
+
 				return errorMessage;
 			})
 			.catch((error) => {
@@ -277,6 +290,7 @@ export class InputControl {
 
 	private _getDataSourceInputs(): { [key: string]: any } {
 		var inputs: { [key: string]: any } = {};
+
 		for (var dataSourceInput of this.dataSourceInputControls) {
 			inputs[dataSourceInput.getInputControlId()] =
 				dataSourceInput.getValue();
@@ -286,8 +300,10 @@ export class InputControl {
 
 	private getStaticValidationsResult(value: string): string {
 		let validationResult = "";
+
 		if (this.inputDescriptor.isRequired) {
 			let result = StaticValidator.validateRequired(value);
+
 			if (result) {
 				validationResult = validationResult.concat(result);
 			}
@@ -302,6 +318,7 @@ export class InputControl {
 					this.inputDescriptor.staticValidation.minLength,
 					this.inputDescriptor.staticValidation.maxLength,
 				);
+
 				if (result) {
 					validationResult = validationResult.concat(result);
 				}
@@ -315,6 +332,7 @@ export class InputControl {
 					regexPattern,
 					this.inputDescriptor.staticValidation.regexFlags || "",
 				);
+
 				if (result) {
 					validationResult = this.inputDescriptor.staticValidation
 						.errorMessage
@@ -332,6 +350,7 @@ export class InputControl {
 					this.inputDescriptor.staticValidation.minValue,
 					this.inputDescriptor.staticValidation.maxValue,
 				);
+
 				if (result) {
 					validationResult = validationResult.concat(result);
 				}
@@ -354,12 +373,14 @@ export class InputControl {
 		);
 
 		var requiredInputsValueMap: StringMap<any> = {};
+
 		var allRequiredInputValuesAvailable: boolean = true;
 		this.validationDataSourceToInputsMap
 			.get(requiredDataSource)
 			.forEach((descriptor) => {
 				if (!descriptor.getValue()) {
 					allRequiredInputValuesAvailable = false;
+
 					return;
 				}
 

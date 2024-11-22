@@ -133,6 +133,7 @@ export class AzureDevOpsClient {
 							org2.accountName,
 						),
 					);
+
 					return organizationList;
 				});
 		}
@@ -144,6 +145,7 @@ export class AzureDevOpsClient {
 		organizationName: string,
 	): Promise<Array<DevOpsProject>> {
 		let url = `${AzureDevOpsBaseUrl}/${organizationName}/_apis/projects`;
+
 		let response = await this.sendRequest(<UrlBasedRequestPrepareOptions>{
 			url: url,
 			headers: {
@@ -158,6 +160,7 @@ export class AzureDevOpsClient {
 		});
 
 		let projects: Array<DevOpsProject> = [];
+
 		if (response.value && response.value.length > 0) {
 			projects = response.value.map((project) => {
 				return { id: project.id, name: project.name };
@@ -230,6 +233,7 @@ export class AzureDevOpsClient {
 		organizationName: string,
 	): Promise<string> {
 		let deferred = Q.defer<string>();
+
 		let accountNameRegex = new RegExp(
 			/^[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]$|^[a-zA-Z]$/,
 		);
@@ -379,11 +383,14 @@ export class AzureDevOpsClient {
 
 	private async monitorOperationStatus(operationUrl: string): Promise<void> {
 		let retryCount = 0;
+
 		let operationResult: any;
 
 		while (retryCount < 30) {
 			operationResult = await this.getOperationResult(operationUrl);
+
 			let result = operationResult.status.toLowerCase();
+
 			if (result === "succeeded") {
 				return;
 			} else if (result === "failed") {

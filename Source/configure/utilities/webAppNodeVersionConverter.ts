@@ -25,6 +25,7 @@ export async function webAppRuntimeNodeVersionConverter(
 			async () => {
 				const resultSelector =
 					"$.value[?(@.name === 'node')].properties.majorVersions[*].runtimeVersion";
+
 				const response = await new ArmRestClient(
 					azureSession,
 				).fetchArmData(armUri, "GET");
@@ -36,9 +37,11 @@ export async function webAppRuntimeNodeVersionConverter(
 				});
 			},
 		);
+
 		let maxVersion = 0;
 		versions.forEach((version: string) => {
 			const match = version.match(/(\d+)(-lts|\.\d+)/i);
+
 			if (match && match.length > 1) {
 				maxVersion = Math.max(maxVersion, +match[1]);
 			}

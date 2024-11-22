@@ -15,6 +15,7 @@ export class DataSourceHandler {
 				let restClient = new RestClient(
 					inputs.azureSession.credentials,
 				);
+
 				let parsedResourceId = new ParsedAzureResourceId(
 					inputs.pipelineConfiguration.params[
 						(
@@ -28,6 +29,7 @@ export class DataSourceHandler {
 						}).name
 					].id,
 				);
+
 				let kubeConfig =
 					restClient.sendRequestWithHttpOperationResponse({
 						url:
@@ -37,7 +39,9 @@ export class DataSourceHandler {
 						deserializationMapper: null,
 						serializationMapper: null,
 					});
+
 				return kubeConfig;
+
 			case PreDefinedDataSourceIds.ACR:
 			case PreDefinedDataSourceIds.FunctionApp:
 			case PreDefinedDataSourceIds.LinuxApp:

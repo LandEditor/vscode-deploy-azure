@@ -17,17 +17,22 @@ export class DataSourceExpression {
 		dataSources: DataSource[],
 	): DataSourceExpression {
 		this._validateDataSourceId(dataSourceId);
+
 		var id: string = dataSourceId.trim();
+
 		var parts: any[] = DataSourceExpression._splitByOperator(id);
+
 		if (parts.length > 1) {
 			var leftChild: DataSourceExpression = DataSourceExpression.parse(
 				parts[0].trim(),
 				dataSources,
 			);
+
 			var rightChild: DataSourceExpression = DataSourceExpression.parse(
 				parts[1].trim(),
 				dataSources,
 			);
+
 			if (!leftChild && !rightChild) {
 				return null;
 			}
@@ -60,6 +65,7 @@ export class DataSourceExpression {
 				this._dataSources,
 				this.value,
 			);
+
 			return [
 				dataSource.endpointUrlStem,
 				dataSource.requestBody,
@@ -69,7 +75,9 @@ export class DataSourceExpression {
 		}
 
 		var leftDependencyArray: string[] = [];
+
 		var rightDependencyArray: string[] = [];
+
 		if (this.leftChild) {
 			leftDependencyArray = this.leftChild.getInputDependencyArray();
 		}
@@ -92,6 +100,7 @@ export class DataSourceExpression {
 				this._dataSources,
 				this.value,
 			);
+
 			return DataSourceUtility.evaluateDataSource(
 				dataSource,
 				inputs,
@@ -168,9 +177,11 @@ export class DataSourceExpression {
 						);
 					});
 				});
+
 			default:
 				var error: string = `Data sources do not support operator ${operator}. Supported operators are: INTERSECT`;
 				//PipelineTemplateErrorLogger.logError(error);
+
 				throw error;
 		}
 	}
@@ -179,12 +190,15 @@ export class DataSourceExpression {
 		var operators: string[] = Object.keys(Operator).filter(
 			(k) => typeof Operator[k as any] === "number" && k !== "UNDEFINED",
 		);
+
 		var parts: string[] = [];
 		operators.forEach((operator: string) => {
 			var delimiter: string = " " + operator + " ";
+
 			if (id.indexOf(delimiter) !== -1) {
 				parts = id.split(delimiter);
 				parts[2] = Operator[operator as any];
+
 				return;
 			}
 		});
@@ -198,11 +212,13 @@ export class DataSourceExpression {
 
 	private static _validateDataSourceId(dataSourceId: string): void {
 		var error: string;
+
 		if (!dataSourceId) {
 			error = "DataSourceId should not be null or empty";
 		}
 
 		var parts: string[] = dataSourceId.trim().split(" ");
+
 		if (parts.length > 1 && parts.length !== 3) {
 			error =
 				"Invalid DataSourceId. It does not support multiple operators. It should be of format 'expression' or 'expression1 [OPERATOR] expression2'";
@@ -215,6 +231,7 @@ export class DataSourceExpression {
 
 		if (error) {
 			//PipelineTemplateErrorLogger.logError(error);
+
 			throw new Error(error);
 		}
 	}

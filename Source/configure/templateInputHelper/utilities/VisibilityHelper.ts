@@ -2,14 +2,17 @@ import { IPredicate, IVisibilityRule } from "../../model/models";
 import { InputControl } from "../InputControl";
 
 const Operator_AND: string = "&&";
+
 const Operator_OR: string = "||";
 
 export class VisibilityHelper {
 	public static parseVisibleRule(visibleRule: string): IVisibilityRule {
 		let rule: IVisibilityRule = null;
+
 		if (visibleRule) {
 			if (visibleRule.indexOf(Operator_AND) !== -1) {
 				let rules = visibleRule.split(Operator_AND);
+
 				let predicateRules = rules.map(this.getPredicateRule);
 				rule = {
 					operator: Operator_AND,
@@ -17,6 +20,7 @@ export class VisibilityHelper {
 				};
 			} else if (visibleRule.indexOf(Operator_OR) !== -1) {
 				let rules = visibleRule.split(Operator_OR);
+
 				let predicateRules = rules.map(this.getPredicateRule);
 				rule = {
 					operator: Operator_OR,
@@ -46,6 +50,7 @@ export class VisibilityHelper {
 			i++
 		) {
 			let predicateRule = visibilityRule.predicateRules[i];
+
 			let dependentInput: InputControl = dependentInputs.find(
 				(dependentInput: InputControl) => {
 					return (
@@ -57,6 +62,7 @@ export class VisibilityHelper {
 
 			if (dependentInput) {
 				let isInputVisible = dependentInput.isVisible();
+
 				if (!isInputVisible) {
 					result = this._evaluate(
 						result,
@@ -76,6 +82,7 @@ export class VisibilityHelper {
 				}
 			} else {
 				result = false;
+
 				break;
 			}
 		}
@@ -85,8 +92,11 @@ export class VisibilityHelper {
 	private static getPredicateRule(visibleRule: string): IPredicate {
 		let reg =
 			/([a-zA-Z0-9 ]+)([!=<>]+)([a-zA-Z0-9. ]+)|([a-zA-Z0-9 ]+(?=NotContains|NotEndsWith|NotStartsWith))(NotContains|NotEndsWith|NotStartsWith)([a-zA-Z0-9. ]+)|([a-zA-Z0-9 ]+(?=Contains|EndsWith|StartsWith))(Contains|EndsWith|StartsWith)([a-zA-Z0-9. ]+)/g;
+
 		let rule: IPredicate = null;
+
 		let matches = reg.exec(visibleRule);
+
 		if (matches && matches.length === 10) {
 			if (!!matches[1]) {
 				rule = {
@@ -130,46 +140,66 @@ export class VisibilityHelper {
 				case "=":
 				case "==":
 					returnValue = valueToCheckLowerCase === expectedValue;
+
 					break;
+
 				case "!=":
 					returnValue = valueToCheckLowerCase !== expectedValue;
+
 					break;
+
 				case "<":
 					returnValue = valueToCheckLowerCase < expectedValue;
+
 					break;
+
 				case ">":
 					returnValue = valueToCheckLowerCase > expectedValue;
+
 					break;
+
 				case "<=":
 					returnValue = valueToCheckLowerCase <= expectedValue;
+
 					break;
+
 				case ">=":
 					returnValue = valueToCheckLowerCase >= expectedValue;
+
 					break;
+
 				case "Contains":
 					returnValue =
 						valueToCheck &&
 						valueToCheck.indexOf(expectedValue) >= 0;
+
 					break;
+
 				case "StartsWith":
 					returnValue =
 						valueToCheck &&
 						valueToCheck
 							.toLowerCase()
 							.startsWith(expectedValue.toLowerCase());
+
 					break;
+
 				case "EndsWith":
 					returnValue =
 						valueToCheck &&
 						valueToCheck
 							.toLowerCase()
 							.endsWith(expectedValue.toLowerCase());
+
 					break;
+
 				case "NotContains":
 					returnValue = !(
 						valueToCheck && valueToCheck.indexOf(expectedValue) >= 0
 					);
+
 					break;
+
 				case "NotStartsWith":
 					returnValue = !(
 						valueToCheck &&
@@ -177,7 +207,9 @@ export class VisibilityHelper {
 							.toLowerCase()
 							.startsWith(expectedValue.toLowerCase())
 					);
+
 					break;
+
 				case "NotEndsWith":
 					returnValue = !(
 						valueToCheck &&
@@ -185,6 +217,7 @@ export class VisibilityHelper {
 							.toLowerCase()
 							.endsWith(expectedValue.toLowerCase())
 					);
+
 					break;
 			}
 		}

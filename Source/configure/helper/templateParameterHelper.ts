@@ -44,6 +44,7 @@ export class TemplateParameterHelper {
 				targetResourceType,
 				targetResourceKind,
 			);
+
 		return parameters.find((parameter) => {
 			return (
 				parameter.type === TemplateParameterType.GenericAzureResource &&
@@ -62,6 +63,7 @@ export class TemplateParameterHelper {
 				targetResourceType,
 				targetResourceKind,
 			);
+
 		let resourceTemplateParameter = (
 			pipelineConfiguration.template as LocalPipelineTemplate
 		).parameters.find((parameter) => {
@@ -70,6 +72,7 @@ export class TemplateParameterHelper {
 				parameter.dataSourceId.startsWith(dataSourceIdForResourceType)
 			);
 		});
+
 		if (!resourceTemplateParameter) {
 			throw utils.format(
 				Messages.azureResourceTemplateParameterCouldNotBeFound,
@@ -79,6 +82,7 @@ export class TemplateParameterHelper {
 
 		let parameterValue: GenericResource =
 			pipelineConfiguration.params[resourceTemplateParameter.name];
+
 		if (!parameterValue) {
 			throw utils.format(
 				Messages.parameterWithNameNotSet,
@@ -102,6 +106,7 @@ export class TemplateParameterHelper {
 				<TargetResourceType>resource.type,
 				<TargetKind>resource.kind,
 			);
+
 		let matchedParam = templateParameters.find((templateParameter) => {
 			return (
 				templateParameter.dataSourceId.toLowerCase() ===
@@ -160,10 +165,14 @@ export class TemplateParameterHelper {
 				case TemplateParameterType.String:
 				case TemplateParameterType.Boolean:
 					await this.getStringParameter(parameter, inputs);
+
 					break;
+
 				case TemplateParameterType.GenericAzureResource:
 					await this.getAzureResourceParameter(parameter, inputs);
+
 					break;
+
 				case TemplateParameterType.SecureString:
 				default:
 					throw new Error(
@@ -190,6 +199,7 @@ export class TemplateParameterHelper {
 			inputs.azureSession.credentials,
 			inputs.subscriptionId,
 		);
+
 		if (!!parameter) {
 			switch (parameter.dataSourceId) {
 				case PreDefinedDataSourceIds.ACR:
@@ -201,6 +211,7 @@ export class TemplateParameterHelper {
 								return { label: x.name, data: x };
 							}),
 						);
+
 					while (1) {
 						let selectedResource =
 							await controlProvider.showQuickPick(
@@ -224,6 +235,7 @@ export class TemplateParameterHelper {
 										: TargetResourceType.AKS,
 								),
 							);
+
 						if (!detailedResource) {
 							throw utils.format(
 								Messages.unableToGetSelectedResource,
@@ -244,6 +256,7 @@ export class TemplateParameterHelper {
 									constants.ResourceDynamicValidationFailure,
 									Messages.onlyAdminEnabledRegistriesAreAllowed,
 								);
+
 								continue;
 							}
 						} else {
@@ -262,6 +275,7 @@ export class TemplateParameterHelper {
 											.addonProfiles,
 									).toLowerCase(),
 								);
+
 								if (addonProfiles.httpapplicationrouting) {
 									addonProfiles.httpApplicationRouting =
 										addonProfiles.httpapplicationrouting;
@@ -286,21 +300,25 @@ export class TemplateParameterHelper {
 									constants.ResourceDynamicValidationFailure,
 									Messages.unableToGetAksKubeConfig,
 								);
+
 								continue;
 							}
 						}
 
 						inputs.pipelineConfiguration.params[parameter.name] =
 							detailedResource;
+
 						break;
 					}
 					break;
+
 				case PreDefinedDataSourceIds.WindowsApp:
 				case PreDefinedDataSourceIds.LinuxApp:
 				case PreDefinedDataSourceIds.FunctionApp:
 				case PreDefinedDataSourceIds.LinuxFunctionApp:
 					let selectedPipelineTemplate =
 						inputs.pipelineConfiguration.template;
+
 					let matchingPipelineTemplates =
 						templateHelper.getPipelineTemplatesForAllWebAppKind(
 							inputs.sourceRepository.repositoryProvider,
@@ -319,6 +337,7 @@ export class TemplateParameterHelper {
 					let webAppKinds = matchingPipelineTemplates.map(
 						(template) => template.targetKind,
 					);
+
 					let selectedResource: QuickPickItemWithData =
 						await controlProvider.showQuickPick(
 							Messages.selectTargetResource,
@@ -339,6 +358,7 @@ export class TemplateParameterHelper {
 							(<GenericResource>selectedResource.data).id,
 						),
 					);
+
 					if (
 						await appServiceClient.isScmTypeSet(
 							(<GenericResource>selectedResource.data).id,
@@ -347,6 +367,7 @@ export class TemplateParameterHelper {
 						await openBrowseExperience(
 							(<GenericResource>selectedResource.data).id,
 						);
+
 						throw Error(Messages.setupAlreadyConfigured);
 					} else {
 						inputs.pipelineConfiguration.params[
@@ -362,6 +383,7 @@ export class TemplateParameterHelper {
 							);
 					}
 					break;
+
 				default:
 					throw new Error(
 						utils.format(
@@ -407,6 +429,7 @@ export class TemplateParameterHelper {
 	): Promise<GenericResource> {
 		try {
 			let detailedResource = null;
+
 			if (getResourceApiVersion) {
 				detailedResource = await azureResourceClient.getResource(
 					selectedResourceId,
@@ -435,6 +458,7 @@ export class TemplateParameterHelper {
 		let controlProvider = new ControlProvider();
 
 		let mustacheContext = new MustacheContext(inputs);
+
 		if (!parameter.dataSourceId) {
 			if (parameter.defaultValue) {
 				let renderedDefaultValue = MustacheHelper.render(
@@ -462,6 +486,7 @@ export class TemplateParameterHelper {
 							port;
 					}
 					break;
+
 				default:
 					if (parameter.options) {
 						inputs.pipelineConfiguration.params[parameter.name] =

@@ -19,6 +19,7 @@ export interface BuildDefinitionRepository {
 	name: string;
 	// tslint:disable-next-line:no-reserved-keywords
 	type: RepositoryProvider;
+
 	defaultBranch: string;
 	url: string;
 	properties?: BuildDefinitionRepositoryProperties;
@@ -29,6 +30,7 @@ export interface BuildDefinitionRepositoryProperties {
 	apiUrl: string;
 	branchesUrl: string;
 	cloneUrl: string;
+
 	defaultBranch: string;
 	fullName: string;
 	refsUrl: string;
@@ -36,6 +38,7 @@ export interface BuildDefinitionRepositoryProperties {
 
 export interface BuildDefinitionTrigger {
 	triggerType: number;
+
 	settingsSourceType: number;
 	batchChanges: boolean;
 }

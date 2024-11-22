@@ -7,6 +7,7 @@ export interface CodeRepository {
 	id: string;
 	// tslint:disable-next-line:no-reserved-keywords
 	type: string;
+
 	defaultBranch: string;
 	authorizationInfo: Authorization;
 }

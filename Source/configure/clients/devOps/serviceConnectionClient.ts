@@ -199,6 +199,7 @@ export class ServiceConnectionClient {
 		publishProfile: string,
 	): Promise<any> {
 		let url = `${AzureDevOpsBaseUrl}/${this.organizationName}/${this.projectName}/_apis/serviceendpoint/endpoints`;
+
 		let parsedResourceId = new ParsedAzureResourceId(resourceId);
 
 		return this.azureDevOpsClient.sendRequest(<

@@ -158,29 +158,43 @@ export class ParsedAzureResourceId {
 	private parseId() {
 		// remove all empty parts in the resource to avoid failing in case there are leading/trailing/extra '/'
 		let parts = this.resourceId.split("/").filter((part) => !!part);
+
 		if (!!parts) {
 			for (let i = 0; i < parts.length; i++) {
 				switch (i) {
 					case 1:
 						this.subscriptionId = parts[i];
+
 						break;
+
 					case 3:
 						this.resourceGroup = parts[i];
+
 						break;
+
 					case 5:
 						this.resourceProvider = parts[i];
+
 						break;
+
 					case 6:
 						this.resourceType = parts[i];
+
 						break;
+
 					case 7:
 						this.resourceName = parts[i];
+
 						break;
+
 					case 8:
 						this.childResourceType = parts[i];
+
 						break;
+
 					case 9:
 						this.childResource = parts[i];
+
 						break;
 				}
 			}

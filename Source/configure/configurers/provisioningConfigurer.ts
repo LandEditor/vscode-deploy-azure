@@ -57,8 +57,10 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 		try {
 			this.provisioningServiceClient =
 				await ProvisioningServiceClientFactory.getClient();
+
 			const OrgAndRepoDetails =
 				wizardInputs.sourceRepository.repositoryId.split("/");
+
 			return await this.provisioningServiceClient.createProvisioningConfiguration(
 				provisioningConfiguration,
 				OrgAndRepoDetails[0],
@@ -70,6 +72,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 				TracePoints.UnableToCreateProvisioningPipeline,
 				error,
 			);
+
 			throw error;
 		}
 	}
@@ -83,6 +86,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 		try {
 			this.provisioningServiceClient =
 				await ProvisioningServiceClientFactory.getClient();
+
 			return await this.provisioningServiceClient.getProvisioningConfiguration(
 				jobId,
 				githubOrg,
@@ -94,6 +98,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 				TracePoints.UnabletoGetProvisioningPipeline,
 				error,
 			);
+
 			throw error;
 		}
 	}
@@ -105,18 +110,21 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 		wizardInputs: WizardInputs,
 	): Promise<ProvisioningConfiguration> {
 		let statusNotFound: number = 0;
+
 		const provisioningServiceResponse = await this.getProvisioningPipeline(
 			jobId,
 			githubOrg,
 			repository,
 			wizardInputs,
 		);
+
 		if (provisioningServiceResponse && provisioningServiceResponse.result) {
 			if (
 				provisioningServiceResponse.result.status === "Queued" ||
 				provisioningServiceResponse.result.status == "InProgress"
 			) {
 				await sleepForMilliSeconds(this.refreshTime);
+
 				return await this.awaitProvisioningPipelineJob(
 					jobId,
 					githubOrg,
@@ -132,6 +140,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 			if (statusNotFound < this.maxNonStatusRetry) {
 				statusNotFound++;
 				await sleepForMilliSeconds(this.refreshTime);
+
 				return await this.awaitProvisioningPipelineJob(
 					jobId,
 					githubOrg,
@@ -148,6 +157,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 
 	public async browseQueuedWorkflow(): Promise<void> {
 		let displayMessage: string;
+
 		if (this.committedWorkflow.length > 1) {
 			displayMessage = Messages.GithubWorkflowSetupMultiFile;
 		} else {
@@ -184,10 +194,12 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 	): Promise<void> {
 		await this.populateFilesToCommit(draftPipelineConfiguration);
 		await this.showPipelineFiles();
+
 		const displayMessage =
 			this.filesToCommit.length > 1
 				? Messages.modifyAndCommitMultipleFiles
 				: Messages.modifyAndCommitFile;
+
 		const commitOrDiscard = await new ControlProvider().showInformationBox(
 			"Commit or discard",
 			utils.format(
@@ -199,7 +211,9 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 			Messages.commitAndPush,
 			Messages.discardPipeline,
 		);
+
 		let provisioningServiceResponse: ProvisioningConfiguration;
+
 		if (
 			!!commitOrDiscard &&
 			commitOrDiscard.toLowerCase() ===
@@ -208,6 +222,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 			telemetryHelper.setCurrentStep(
 				"ConfiguringPreRequisiteParamsForCompleteMode",
 			);
+
 			if (this.getInputDescriptor(inputs, "azureAuth")) {
 				await this.createSPN(inputs);
 			}
@@ -226,17 +241,20 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 								draftPipelineConfiguration.id,
 								draftPipelineConfiguration.type,
 							);
+
 						const completeProvisioningSvcResp =
 							await this.queueProvisioningPipelineJob(
 								provisioningConfiguration,
 								inputs,
 							);
+
 						if (completeProvisioningSvcResp.id != "") {
 							const OrgAndRepoDetails =
 								inputs.sourceRepository.repositoryId.split("/");
 							telemetryHelper.setCurrentStep(
 								"AwaitCompleteProvisioningPipeline",
 							);
+
 							return await this.awaitProvisioningPipelineJob(
 								completeProvisioningSvcResp.id,
 								OrgAndRepoDetails[0],
@@ -258,6 +276,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 								error.message,
 							),
 						);
+
 						return null;
 					}
 				},
@@ -268,10 +287,12 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 				"true",
 			);
 			await this.moveWorkflowFilesToLocalRepo();
+
 			throw new UserCancelledError(Messages.operationCancelled);
 		}
 
 		fse.removeSync(this.tempWorkflowDirPath);
+
 		if (provisioningServiceResponse != undefined) {
 			this.setQueuedPipelineUrl(provisioningServiceResponse, inputs);
 		} else {
@@ -299,13 +320,16 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 							provisioningConfiguration,
 							inputs,
 						);
+
 					if (provisioningServiceDraftModeResponse.id != "") {
 						// Monitor the provisioning pipeline
 						telemetryHelper.setCurrentStep(
 							"AwaitDraftProvisioningPipeline",
 						);
+
 						const OrgAndRepoDetails =
 							inputs.sourceRepository.repositoryId.split("/");
+
 						return await this.awaitProvisioningPipelineJob(
 							provisioningServiceDraftModeResponse.id,
 							OrgAndRepoDetails[0],
@@ -323,6 +347,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 						TracePoints.ConfiguringDraftPipelineFailed,
 						error,
 					);
+
 					throw error;
 				}
 			},
@@ -361,13 +386,16 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 		this.tempWorkflowDirPath = fse.mkdtempSync(
 			os.tmpdir().concat(Path.sep),
 		);
+
 		for (const file of draftPipelineConfiguration.files) {
 			const pathList = file.path.split("/");
+
 			const filePath: string = pathList.join(Path.sep);
 			destination = await this.getPathToFile(
 				Path.basename(filePath),
 				Path.dirname(filePath),
 			);
+
 			const decodedData = new Buffer(file.content, "base64").toString(
 				"utf-8",
 			);
@@ -394,16 +422,19 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 			wizardInputs,
 			"azureAuth",
 		);
+
 		const createResourceGroup = InputControl.getInputDescriptorProperty(
 			inputDescriptor,
 			"resourceGroup",
 			wizardInputs.pipelineConfiguration.params,
 		);
+
 		const location = InputControl.getInputDescriptorProperty(
 			inputDescriptor,
 			"location",
 			wizardInputs.pipelineConfiguration.params,
 		);
+
 		if (
 			createResourceGroup &&
 			createResourceGroup.length > 0 &&
@@ -433,6 +464,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 							TracePoints.ResourceGroupCreationFailed,
 							error,
 						);
+
 						throw error;
 					}
 				},
@@ -443,6 +475,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 			"scope",
 			wizardInputs.pipelineConfiguration.params,
 		);
+
 		if (scope && scope.length > 0 && scope[0] != "") {
 			wizardInputs.pipelineConfiguration.params["azureAuth"] =
 				await vscode.window.withProgress(
@@ -463,6 +496,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 								TracePoints.SPNCreationFailed,
 								error,
 							);
+
 							throw error;
 						}
 					},
@@ -476,11 +510,15 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 	): ExtendedInputDescriptor {
 		const template = wizardInputs.pipelineConfiguration
 			.template as RemotePipelineTemplate;
+
 		let inputDataType: InputDataType;
+
 		switch (inputId) {
 			case "azureAuth":
 				inputDataType = InputDataType.Authorization;
+
 				break;
+
 			default:
 				return undefined;
 		}
@@ -498,11 +536,13 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 			inputs.sourceRepository.remoteName,
 			"github",
 		);
+
 		const aadApp = await GraphHelper.createSpnAndAssignRole(
 			inputs.azureSession,
 			aadAppName,
 			scope,
 		);
+
 		return JSON.stringify({
 			scheme: "ServicePrincipal",
 			parameters: {
@@ -520,10 +560,12 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 		type: string,
 	): Promise<DraftPipelineConfiguration> {
 		const files: File[] = [];
+
 		for (const file of this.filesToCommit) {
 			const fileContent = await this.localGitRepoHelper.readFileContent(
 				file.absPath,
 			);
+
 			const encodedContent = new Buffer(fileContent, "utf-8").toString(
 				"base64",
 			);
@@ -540,9 +582,12 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 	private async moveWorkflowFilesToLocalRepo(): Promise<void> {
 		const gitRootDirectory: string =
 			await this.localGitRepoHelper.getGitRootDirectory();
+
 		for (const file of this.filesToCommit) {
 			const filePathList = file.path.split("/");
+
 			const filePath: string = filePathList.join(Path.sep);
+
 			const filePathToLocalRepo: string = Path.join(
 				gitRootDirectory,
 				filePath,
@@ -564,6 +609,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 		);
 		fse.mkdirpSync(directoryPath);
 		telemetryHelper.setTelemetry(TelemetryKeys.WorkflowFileName, fileName);
+
 		return Path.join(directoryPath, fileName);
 	}
 }

@@ -108,6 +108,7 @@ function startLanguageClient(context: vscode.ExtensionContext) {
 			serverOptions,
 			clientOptions,
 		);
+
 		let disposable = client.start();
 
 		// Push the disposable to the context's subscriptions so that the

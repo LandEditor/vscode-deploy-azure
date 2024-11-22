@@ -36,6 +36,7 @@ class TelemetryHelper {
 
 	public setResult(result: Result, error?: Error): void {
 		this.actionContext.telemetry.properties.result = result;
+
 		if (error) {
 			let parsedError = parseError(error);
 			this.actionContext.telemetry.properties.error =
@@ -76,6 +77,7 @@ class TelemetryHelper {
 		telemetryKey: string,
 	): Promise<T> {
 		let startTime = Date.now();
+
 		try {
 			return await callback();
 		} finally {

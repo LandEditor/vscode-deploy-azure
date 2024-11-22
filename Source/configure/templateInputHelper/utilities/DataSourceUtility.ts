@@ -15,15 +15,19 @@ export class DataSourceUtility {
 		dataSourceEndpointUrl: string,
 	): string[] {
 		var inputIds: string[] = [];
+
 		if (!!dataSourceEndpointUrl) {
 			var dependentInputs = dataSourceEndpointUrl.match(
 				/\{\{\{inputs.\w+\}\}\}/g,
 			);
+
 			if (!!dependentInputs) {
 				dependentInputs.forEach((value) => {
 					var startIndex =
 						value.indexOf("{{{inputs.") + "{{{inputs.".length;
+
 					var endIndex = value.indexOf("}}}");
+
 					var inputId = value.substring(startIndex, endIndex);
 					inputIds.push(inputId);
 				});
@@ -51,12 +55,17 @@ export class DataSourceUtility {
 		azureSession: AzureSession,
 	): Promise<any> {
 		var view = { inputs: inputs };
+
 		var armUri = MustacheHelper.render(dataSource.endpointUrlStem, view);
+
 		var httpMethod = dataSource.httpMethod || "GET";
+
 		var requestBody = !!dataSource.requestBody
 			? MustacheHelper.render(dataSource.requestBody, view)
 			: null;
+
 		let amrClient = new ArmRestClient(azureSession);
+
 		return amrClient
 			.fetchArmData(armUri, httpMethod, JSON.parse(requestBody))
 			.then((response: any) => {
@@ -84,6 +93,7 @@ export class DataSourceUtility {
 				wrap: false,
 				flatten: true,
 			});
+
 			if (response === "" || response === isNullOrUndefined) {
 				return null;
 			}

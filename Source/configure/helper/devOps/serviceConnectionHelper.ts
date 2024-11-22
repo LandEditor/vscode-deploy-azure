@@ -29,6 +29,7 @@ export class ServiceConnectionHelper {
 				name,
 				gitHubPat,
 			);
+
 		let endpointId: string = response.id;
 		await this.waitForGitHubEndpointToBeReady(endpointId);
 		await this.serviceConnectionClient
@@ -57,6 +58,7 @@ export class ServiceConnectionHelper {
 				scope,
 				aadApp,
 			);
+
 		let endpointId = response.id;
 		await this.waitForEndpointToBeReady(endpointId);
 		await this.serviceConnectionClient
@@ -66,6 +68,7 @@ export class ServiceConnectionHelper {
 					throw new Error(Messages.couldNotAuthorizeEndpoint);
 				}
 			});
+
 		return endpointId;
 	}
 
@@ -82,6 +85,7 @@ export class ServiceConnectionHelper {
 				resourceId,
 				publishProfile,
 			);
+
 		let endpointId = response.id;
 		await this.waitForEndpointToBeReady(endpointId);
 		await this.serviceConnectionClient
@@ -91,6 +95,7 @@ export class ServiceConnectionHelper {
 					throw new Error(Messages.couldNotAuthorizeEndpoint);
 				}
 			});
+
 		return endpointId;
 	}
 
@@ -105,6 +110,7 @@ export class ServiceConnectionHelper {
 				kubeConfig,
 				apiServerAddress,
 			);
+
 		let endpointId = response.id;
 		await this.serviceConnectionClient
 			.authorizeEndpointForAllPipelines(endpointId)
@@ -113,6 +119,7 @@ export class ServiceConnectionHelper {
 					throw new Error(Messages.couldNotAuthorizeEndpoint);
 				}
 			});
+
 		return endpointId;
 	}
 
@@ -129,6 +136,7 @@ export class ServiceConnectionHelper {
 				registryUsername,
 				registryPassword,
 			);
+
 		let endpointId = response.id;
 		await this.serviceConnectionClient
 			.authorizeEndpointForAllPipelines(endpointId)
@@ -137,16 +145,19 @@ export class ServiceConnectionHelper {
 					throw new Error(Messages.couldNotAuthorizeEndpoint);
 				}
 			});
+
 		return endpointId;
 	}
 
 	private async waitForEndpointToBeReady(endpointId: string): Promise<void> {
 		let retryCount = 1;
+
 		while (1) {
 			let response =
 				await this.serviceConnectionClient.getEndpointStatus(
 					endpointId,
 				);
+
 			let operationStatus = response.operationStatus;
 
 			if (response.isReady) {
@@ -175,11 +186,13 @@ export class ServiceConnectionHelper {
 		endpointId: string,
 	): Promise<void> {
 		let retryCount = 1;
+
 		while (1) {
 			let response =
 				await this.serviceConnectionClient.getEndpointStatus(
 					endpointId,
 				);
+
 			let isReady: boolean = response.isReady;
 
 			if (isReady === true) {

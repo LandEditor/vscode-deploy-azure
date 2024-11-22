@@ -30,10 +30,14 @@ export class GithubClient {
 	): Promise<void> {
 		const secretKeyObject: IGitHubSecretKey =
 			await this._getGitHubSecretKey();
+
 		const sodiumObj = new SodiumLibHelper(secretKeyObject.key);
+
 		const encryptedBytes: Uint8Array = sodiumObj.encrypt(body);
+
 		const encryptedBytesAsString: string =
 			SodiumLibHelper.convertUint8ArrayToString(encryptedBytes);
+
 		const encryptedEncodedText = SodiumLibHelper.encodeToBase64(
 			encryptedBytesAsString,
 		);
@@ -52,6 +56,7 @@ export class GithubClient {
 		const Url = isUserAccount
 			? "https://api.github.com/user/repos"
 			: "https://api.github.com/orgs/" + orgName + "/repos";
+
 		return this._sendRequest(<UrlBasedRequestPrepareOptions>{
 			url: Url,
 			headers: {
@@ -115,6 +120,7 @@ export class GithubClient {
 				}),
 			]).then(([organizations, userInfo]) => {
 				(userInfo as GitHubOrganization).isUserAccount = true;
+
 				return (organizations as GitHubOrganization[])
 					.concat(userInfo as GitHubOrganization)
 					.sort((org1, org2) =>
@@ -140,6 +146,7 @@ export class GithubClient {
 			serializationMapper: null,
 			deserializationMapper: null,
 		};
+
 		return (await this._sendRequest(request)) as IGitHubSecretKey;
 	}
 
@@ -174,6 +181,7 @@ export class GithubClient {
 		request: IUrlBasedRequestPrepareOptions2,
 	): Promise<{}> {
 		const restClient = new RestClient();
+
 		return restClient
 			.sendRequest({ ...request, returnFullResponseForFailure: true })
 			.catch((error) => {

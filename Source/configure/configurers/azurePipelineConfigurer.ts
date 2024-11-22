@@ -100,10 +100,12 @@ export class AzurePipelineConfigurer implements Configurer {
 					inputs.project = selectedProject.data;
 				} else {
 					inputs.isNewOrganization = true;
+
 					let userName = inputs.azureSession.userId.substring(
 						0,
 						inputs.azureSession.userId.indexOf("@"),
 					);
+
 					let organizationName = generateDevOpsOrganizationName(
 						userName,
 						inputs.sourceRepository.repositoryName,
@@ -113,6 +115,7 @@ export class AzurePipelineConfigurer implements Configurer {
 						await this.azureDevOpsClient.validateOrganizationName(
 							organizationName,
 						);
+
 					if (validationErrorMessage) {
 						inputs.organizationName =
 							await this.controlProvider.showInputBox(
@@ -182,6 +185,7 @@ export class AzurePipelineConfigurer implements Configurer {
 				TracePoints.GetAzureDevOpsDetailsFailed,
 				error,
 			);
+
 			throw error;
 		}
 	}
@@ -224,6 +228,7 @@ export class AzurePipelineConfigurer implements Configurer {
 							TracePoints.CreateNewOrganizationAndProjectFailure,
 							error,
 						);
+
 						throw error;
 					}
 				},
@@ -259,6 +264,7 @@ export class AzurePipelineConfigurer implements Configurer {
 							TracePoints.GitHubServiceConnectionError,
 							error,
 						);
+
 						throw error;
 					}
 				},
@@ -280,6 +286,7 @@ export class AzurePipelineConfigurer implements Configurer {
 					async () => {
 						try {
 							let serviceConnectionName = `${inputs.targetResource.resource.name}-${UniqueResourceNameSuffix}`;
+
 							switch (
 								(
 									inputs.pipelineConfiguration
@@ -288,6 +295,7 @@ export class AzurePipelineConfigurer implements Configurer {
 							) {
 								case AzureConnectionType.None:
 									return "";
+
 								case AzureConnectionType.AzureRMPublishProfile:
 									return await this.createAzurePublishProfileEndpoint(
 										serviceConnectionHelper,
@@ -295,6 +303,7 @@ export class AzurePipelineConfigurer implements Configurer {
 										serviceConnectionName,
 										inputs,
 									);
+
 								case AzureConnectionType.AzureRMServicePrincipal:
 								default:
 									return await this.createAzureSPNServiceEndpoint(
@@ -309,6 +318,7 @@ export class AzurePipelineConfigurer implements Configurer {
 								TracePoints.AzureServiceConnectionCreateFailure,
 								error,
 							);
+
 							throw error;
 						}
 					},
@@ -338,24 +348,28 @@ export class AzurePipelineConfigurer implements Configurer {
 					data.scope,
 					data.aadApp,
 				);
+
 			case TemplateAssetType.AzureARMPublishProfileServiceConnection:
 				let targetWebApp =
 					TemplateParameterHelper.getParameterValueForTargetResourceType(
 						inputs.pipelineConfiguration,
 						TargetResourceType.WebApp,
 					);
+
 				return await serviceConnectionHelper.createAzurePublishProfileServiceConnection(
 					name,
 					inputs.azureSession.tenantId,
 					targetWebApp.id,
 					data,
 				);
+
 			case TemplateAssetType.AKSKubeConfigServiceConnection:
 				let targetAks =
 					TemplateParameterHelper.getParameterValueForTargetResourceType(
 						inputs.pipelineConfiguration,
 						TargetResourceType.AKS,
 					);
+
 				let serverUrl = targetAks.properties
 					? targetAks.properties.fqdn
 					: "";
@@ -363,17 +377,20 @@ export class AzurePipelineConfigurer implements Configurer {
 					!!serverUrl && !serverUrl.startsWith("https://")
 						? "https://" + serverUrl
 						: serverUrl;
+
 				return await serviceConnectionHelper.createKubeConfigServiceConnection(
 					name,
 					data,
 					serverUrl,
 				);
+
 			case TemplateAssetType.ACRServiceConnection:
 				let targetAcr =
 					TemplateParameterHelper.getParameterValueForTargetResourceType(
 						inputs.pipelineConfiguration,
 						TargetResourceType.ACR,
 					);
+
 				let registryUrl: string = targetAcr.properties
 					? targetAcr.properties.loginServer
 					: "";
@@ -381,16 +398,19 @@ export class AzurePipelineConfigurer implements Configurer {
 					!!registryUrl && !registryUrl.startsWith("https://")
 						? "https://" + registryUrl
 						: registryUrl;
+
 				let password =
 					!!data.passwords && data.passwords.length > 0
 						? data.passwords[0].value
 						: null;
+
 				return await serviceConnectionHelper.createContainerRegistryServiceConnection(
 					name,
 					registryUrl,
 					data.username,
 					password,
 				);
+
 			default:
 				throw new Error(
 					utils.format(
@@ -406,6 +426,7 @@ export class AzurePipelineConfigurer implements Configurer {
 		localGitRepoHelper: LocalGitRepoHelper,
 	): Promise<string> {
 		let rootDirectory = await localGitRepoHelper.getGitRootDirectory();
+
 		return path.join(
 			rootDirectory,
 			await LocalGitRepoHelper.GetAvailableFileName(
@@ -429,6 +450,7 @@ export class AzurePipelineConfigurer implements Configurer {
 		localGitRepoHelper: LocalGitRepoHelper,
 	): Promise<string> {
 		let commitMessage: string;
+
 		let initializeGitRepository = !inputs.sourceRepository.remoteUrl;
 
 		if (!inputs.sourceRepository.remoteUrl) {
@@ -481,6 +503,7 @@ export class AzurePipelineConfigurer implements Configurer {
 										? repositoryName +
 											UniqueResourceNameSuffix
 										: "codetoazure";
+
 									let repository =
 										await this.azureDevOpsClient.createRepository(
 											inputs.organizationName,
@@ -527,6 +550,7 @@ export class AzurePipelineConfigurer implements Configurer {
 										error.message,
 									),
 								);
+
 								return null;
 							}
 						},
@@ -536,6 +560,7 @@ export class AzurePipelineConfigurer implements Configurer {
 					TelemetryKeys.PipelineDiscarded,
 					"true",
 				);
+
 				throw new UserCancelledError(Messages.operationCancelled);
 			}
 		}
@@ -555,6 +580,7 @@ export class AzurePipelineConfigurer implements Configurer {
 						AzurePipelineConfigurer.getTargetResource(inputs);
 
 					let pipelineName = `${targetResource ? targetResource.name : inputs.pipelineConfiguration.template.label}-${UniqueResourceNameSuffix}`;
+
 					return await this.azureDevOpsHelper.createAndRunPipeline(
 						pipelineName,
 						inputs,
@@ -565,6 +591,7 @@ export class AzurePipelineConfigurer implements Configurer {
 						TracePoints.CreateAndQueuePipelineFailed,
 						error,
 					);
+
 					throw error;
 				}
 			},
@@ -596,6 +623,7 @@ export class AzurePipelineConfigurer implements Configurer {
 						inputs.project.id,
 						this.queuedPipeline.definition.id,
 					);
+
 				let buildUrl = this.azureDevOpsClient.getOldFormatBuildUrl(
 					inputs.organizationName,
 					inputs.project.id,
@@ -697,6 +725,7 @@ export class AzurePipelineConfigurer implements Configurer {
 		let targetResource = !!inputs.targetResource.resource
 			? inputs.targetResource.resource
 			: null;
+
 		if (!targetResource) {
 			let targetParam =
 				TemplateParameterHelper.getParameterForTargetResourceType(
@@ -706,6 +735,7 @@ export class AzurePipelineConfigurer implements Configurer {
 					).parameters,
 					inputs.pipelineConfiguration.template.targetType,
 				);
+
 			if (
 				!!targetParam &&
 				!!inputs.pipelineConfiguration.params[targetParam.name]
@@ -734,6 +764,7 @@ export class AzurePipelineConfigurer implements Configurer {
 		let publishProfile = await (
 			azureResourceClient as AppServiceClient
 		).getWebAppPublishProfileXml(inputs.targetResource.resource.id);
+
 		return await serviceConnectionHelper.createAzurePublishProfileServiceConnection(
 			serviceConnectionName,
 			inputs.azureSession.tenantId,
@@ -748,15 +779,18 @@ export class AzurePipelineConfigurer implements Configurer {
 		inputs: WizardInputs,
 	): Promise<string> {
 		let scope = inputs.targetResource.resource.id;
+
 		let aadAppName = GraphHelper.generateAadApplicationName(
 			inputs.organizationName,
 			inputs.project.name,
 		);
+
 		let aadApp = await GraphHelper.createSpnAndAssignRole(
 			inputs.azureSession,
 			aadAppName,
 			scope,
 		);
+
 		return await serviceConnectionHelper.createAzureSPNServiceConnection(
 			serviceConnectionName,
 			inputs.azureSession.tenantId,

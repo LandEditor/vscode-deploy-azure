@@ -64,7 +64,9 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 			await TemplateServiceClientFactory.getClient();
 		this.template = wizardInputs.pipelineConfiguration
 			.template as RemotePipelineTemplate;
+
 		let extendedPipelineTemplate;
+
 		try {
 			extendedPipelineTemplate =
 				await this.templateServiceClient.getTemplateConfiguration(
@@ -77,6 +79,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 				TracePoints.UnableToGetTemplateConfiguration,
 				error,
 			);
+
 			throw error;
 		}
 		this.template.configuration =
@@ -102,6 +105,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 
 		for (let variable of this.template.configuration.variables) {
 			let expression = variable.value;
+
 			let value = MustacheHelper.render(expression, this.mustacheContext);
 			this.variables[variable.id] = value;
 		}
@@ -118,6 +122,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 		stage: ConfigurationStage = ConfigurationStage.Pre,
 	) {
 		let assets = this.template.configuration.assets;
+
 		if (!!assets && assets.length > 0) {
 			for (let asset of assets) {
 				if (asset.stage === stage) {
@@ -125,6 +130,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 						asset,
 						this.mustacheContext,
 					);
+
 					try {
 						await this.createAssetInternal(asset);
 					} catch (error) {
@@ -133,6 +139,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 							TracePoints.AssetCreationFailure,
 							error,
 						);
+
 						throw error;
 					}
 				}
@@ -149,6 +156,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 			await this.localGitHelper.addContentToFile(file.content, file.path);
 			await vscode.window.showTextDocument(vscode.Uri.file(file.path));
 		});
+
 		return this.filesToCommit.map((x) => x.path);
 	}
 
@@ -173,18 +181,23 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 											InputDataType.Authorization &&
 										value.id === "azureAuth",
 								);
+
 							const scope =
 								InputControl.getInputDescriptorProperty(
 									inputDescriptor,
 									"scope",
 									this.inputs.pipelineConfiguration.params,
 								);
+
 							return this.getAzureSPNSecret(this.inputs, scope);
 						},
 					);
+
 					break;
+
 				case "SetGHSecret":
 					let secretKey: string = asset.inputs["secretKey"];
+
 					let secretValue: string = asset.inputs["secretvalue"];
 					await vscode.window.withProgress(
 						{
@@ -199,9 +212,12 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 						},
 					);
 					this.secrets[asset.id] = "{{ secrets." + secretKey + " }}";
+
 					break;
+
 				case "commitFile:Github":
 					let source: string = asset.inputs["source"];
+
 					let destination: string = asset.inputs["destination"];
 					await vscode.window.withProgress(
 						{
@@ -225,11 +241,14 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 					);
 
 					this.assets[asset.id] = destination;
+
 					break;
+
 				case "LinuxWebAppNodeVersionConverter":
 					{
 						let nodeVersion: string =
 							asset.inputs["webAppRuntimeNodeVersion"];
+
 						const armUri =
 							"/providers/Microsoft.Web/availableStacks?osTypeSelected=Linux&api-version=2019-08-01";
 						this.assets[asset.id] =
@@ -240,10 +259,12 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 							);
 					}
 					break;
+
 				case "WindowsWebAppNodeVersionConverter":
 					{
 						let nodeVersion: string =
 							asset.inputs["webAppRuntimeNodeVersion"];
+
 						const armUri =
 							"/providers/Microsoft.Web/availableStacks?osTypeSelected=Windows&api-version=2019-08-01";
 						this.assets[asset.id] =
@@ -254,12 +275,15 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 							);
 					}
 					break;
+
 				case "AzureCredentials:PublishProfile":
 					{
 						let resourceId = asset.inputs["resourceId"];
+
 						let parsedResourceId = new ParsedAzureResourceId(
 							resourceId,
 						);
+
 						let subscriptionId = parsedResourceId.subscriptionId;
 
 						this.assets[asset.id] =
@@ -282,6 +306,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 												this.azureSession.tenantId,
 												subscriptionId,
 											);
+
 										return await appServiceClient.getWebAppPublishProfileXml(
 											resourceId,
 										);
@@ -291,12 +316,14 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 											TracePoints.AzurePublishProfileCreationFailure,
 											error,
 										);
+
 										throw error;
 									}
 								},
 							);
 					}
 					break;
+
 				default:
 					throw new Error(
 						utils.format(
@@ -313,6 +340,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 			this.template.configuration.pipelineDefinition,
 			this.mustacheContext,
 		);
+
 		let workflowFileContent: string;
 		await vscode.window.withProgress(
 			{
@@ -325,6 +353,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 				);
 			},
 		);
+
 		let workFlowFileName: string = pipelineDefinition.destinationFileName;
 		workFlowFileName = await this.getPathToPipelineFile(
 			inputs,
@@ -332,6 +361,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 			workFlowFileName,
 		);
 		inputs.pipelineConfiguration.filePath = workFlowFileName;
+
 		return {
 			path: workFlowFileName,
 			content: workflowFileContent,
@@ -344,15 +374,18 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 				this.template.id,
 				fileName,
 			);
+
 			if (result.length > 0) {
 				let templateFile = result.find(
 					(value) => value.id === fileName,
 				);
+
 				if (templateFile) {
 					let content =
 						templateConverter.convertToLocalMustacheExpression(
 							templateFile.content,
 						);
+
 					return MustacheHelper.render(content, this.mustacheContext);
 				}
 			}
@@ -365,6 +398,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 				TracePoints.UnableToGetTemplateFile,
 				error,
 			);
+
 			throw error;
 		}
 	}

@@ -27,6 +27,7 @@ export class ProvisioningServiceClient implements IProvisioningServiceClient {
 		this.restClient = new RestClient(credentials);
 		this.serviceDefinition = serviceDefinition;
 		this.defaultHeaders = headers;
+
 		if (this.serviceDefinition.serviceFramework === ServiceFramework.Vssf) {
 			this.defaultParameters = {
 				"api-version": this.PEProvisioningServiceAPIVersion,

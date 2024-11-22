@@ -30,8 +30,10 @@ export class ConfigurerFactory {
 							);
 				}
 				return new AzurePipelineConfigurer(azureSession);
+
 			case RepositoryProvider.AzureRepos:
 				return new AzurePipelineConfigurer(azureSession);
+
 			default:
 				throw new Error(Messages.cannotIdentifyRespositoryDetails);
 		}

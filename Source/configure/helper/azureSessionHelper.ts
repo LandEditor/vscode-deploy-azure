@@ -41,6 +41,7 @@ export async function getAzureSession(): Promise<AzureSession> {
 
 	const currentSubscription =
 		extensionVariables.azureAccountExtensionApi.subscriptions[0];
+
 	if (isNullOrUndefined(currentSubscription)) {
 		throw new WhiteListedError(Messages.NoAzureSubscriptionFound);
 	}

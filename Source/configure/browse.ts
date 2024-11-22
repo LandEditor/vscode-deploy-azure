@@ -23,9 +23,11 @@ export async function browsePipeline(node: AzureTreeItem): Promise<void> {
 			if (!!node && !!node.fullId) {
 				let parsedAzureResourceId: ParsedAzureResourceId =
 					new ParsedAzureResourceId(node.fullId);
+
 				let session: AzureSession = await getSubscriptionSession(
 					parsedAzureResourceId.subscriptionId,
 				);
+
 				let appServiceClient = new AppServiceClient(
 					session.credentials,
 					session.environment,
@@ -55,6 +57,7 @@ async function browsePipelineInternal(
 	appServiceClient: AppServiceClient,
 ): Promise<void> {
 	let siteConfig = await appServiceClient.getAppServiceConfig(resourceId);
+
 	let scmType =
 		!!siteConfig &&
 		!!siteConfig.scmType &&
@@ -70,7 +73,9 @@ async function browsePipelineInternal(
 		await browseGitHubWorkflow(resourceId, appServiceClient);
 	} else if (scmType === "" || scmType === ScmType.NONE.toLowerCase()) {
 		let deployToAzureAction = "Deploy to Azure";
+
 		let controlProvider = new ControlProvider();
+
 		let result = await controlProvider.showInformationBox(
 			constants.BrowseNotAvailableConfigurePipeline,
 			Messages.browseNotAvailableConfigurePipeline,
@@ -119,6 +124,7 @@ async function browseGitHubWorkflow(
 ): Promise<void> {
 	let webAppSourceControl =
 		await appServiceClient.getSourceControl(resourceId);
+
 	let webAppMetaData =
 		await appServiceClient.getAppServiceMetadata(resourceId);
 

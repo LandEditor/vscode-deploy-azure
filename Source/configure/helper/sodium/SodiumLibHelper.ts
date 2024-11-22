@@ -25,6 +25,7 @@ export class SodiumLibHelper {
 
 	public static decodeFromBase64(encoded: string): string {
 		let decodedbase64 = new Buffer(encoded, "base64");
+
 		return decodedbase64.toString("binary");
 	}
 
@@ -34,9 +35,11 @@ export class SodiumLibHelper {
 
 	public static convertStringToUint8Array(v: string): Uint8Array {
 		let body = v.split("");
+
 		let _body = body.map((a) => {
 			return a.charCodeAt(0);
 		});
+
 		return Uint8Array.from(_body);
 	}
 

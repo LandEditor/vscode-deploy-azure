@@ -11,12 +11,15 @@ export class MustacheHelper {
 				 */
 				return function (text: string, render: any) {
 					var renderedText: string = render(text);
+
 					var parts = MustacheHelper.getParts(renderedText);
+
 					if (parts.length < 4) {
 						return "";
 					}
 
 					var ignoreCase = parts[2];
+
 					if (ignoreCase) {
 						if (parts[0].toLowerCase() === parts[1].toLowerCase()) {
 							return parts[3];
@@ -41,6 +44,7 @@ export class MustacheHelper {
 				 */
 				return function (text: string, render: any) {
 					let parts = MustacheHelper.getParts(text);
+
 					if (parts.length > 1) {
 						if (render(parts[0]) === "true") {
 							return render(parts[1]);
@@ -73,7 +77,9 @@ export class MustacheHelper {
 				return function () {
 					return "yxxx".replace(/[xy]/g, function (c) {
 						var r = (Math.random() * 16) | 0;
+
 						var v = c === "x" ? r : (r & 0x3) | 0x8;
+
 						return v.toString(16);
 					});
 				};
@@ -97,13 +103,16 @@ export class MustacheHelper {
 				 */
 				return function (text: string, render: any) {
 					var renderedText = render(text);
+
 					var parts = MustacheHelper.getParts(renderedText);
 
 					if (parts.length < 3) {
 						return render("");
 					} else {
 						var start = +parts[1];
+
 						var length = +parts[2];
+
 						return render(parts[0].substr(start, length));
 					}
 				};
@@ -112,13 +121,17 @@ export class MustacheHelper {
 			"parseAzureResourceId": function () {
 				return function (text: string, render: any) {
 					var renderedText: string = render(text);
+
 					var parts = MustacheHelper.getParts(renderedText);
+
 					if (parts.length !== 2) {
 						return "";
 					}
 
 					var splitResourceId = parts[0].split("/");
+
 					var urlResourcePartIndex = parseInt(parts[1]);
+
 					if (
 						splitResourceId &&
 						urlResourcePartIndex &&
@@ -138,12 +151,15 @@ export class MustacheHelper {
 			"beginsWith": function () {
 				return function (text: string, render: any) {
 					var renderedText: string = render(text);
+
 					var parts = MustacheHelper.getParts(renderedText);
+
 					if (parts.length < 4) {
 						return "";
 					}
 
 					var ignoreCase = parts[2];
+
 					if (ignoreCase) {
 						if (
 							parts[0]
@@ -172,7 +188,9 @@ export class MustacheHelper {
 			"environmentVariable": function () {
 				return function (text: string, render: any) {
 					var renderedText: string = render(text);
+
 					var parts = MustacheHelper.getParts(renderedText);
+
 					if (parts.length < 1) {
 						return "";
 					}
@@ -187,13 +205,17 @@ export class MustacheHelper {
 			"intSorter": function () {
 				return function (text: string, render: any) {
 					var parts = MustacheHelper.getParts(text);
+
 					if (parts.length < 2) {
 						return "";
 					}
 
 					var order = parts[1].toLowerCase();
+
 					var arr = render(parts[0]).split(",");
+
 					var sorter = 1;
+
 					if (order === "dsc") {
 						sorter = -1;
 					}
@@ -204,6 +226,7 @@ export class MustacheHelper {
 							return -1 * sorter;
 						}
 					});
+
 					return arr;
 				};
 			},
@@ -215,7 +238,9 @@ export class MustacheHelper {
 			"stringReplace": function () {
 				return function (text: string, render: any) {
 					var renderedText: string = render(text);
+
 					var parts = MustacheHelper.getParts(renderedText);
+
 					if (parts.length != 3) {
 						return "";
 					}
@@ -231,17 +256,23 @@ export class MustacheHelper {
 			"semverSatisfy": function () {
 				return function (text: string, render: any) {
 					var renderedText: string = render(text);
+
 					var parts = MustacheHelper.getParts(renderedText);
+
 					if (parts.length != 4) {
 						return "";
 					}
 					var givenVersion = parts[0].trim();
+
 					var semverCondition = parts[1].trim();
+
 					if (givenVersion.length == 0 || semverCondition.length == 0)
 						return parts[3];
 					givenVersion = Semver.minVersion(givenVersion);
+
 					if (Semver.satisfies(givenVersion, semverCondition))
 						return parts[2];
+
 					return parts[3];
 				};
 			},
@@ -250,6 +281,7 @@ export class MustacheHelper {
 
 	public static render(mustacheExpression: string, view: any): string {
 		view = { ...this.getHelperMethods(), ...view };
+
 		return Mustache.render(mustacheExpression, view);
 	}
 
@@ -259,14 +291,17 @@ export class MustacheHelper {
 		}
 
 		var resultArray: any[] = [];
+
 		if (Array.isArray(mustacheObject)) {
 			mustacheObject.forEach((item) => {
 				resultArray.push(MustacheHelper.renderObject(item, view));
 			});
+
 			return resultArray;
 		}
 
 		var result: Object = {};
+
 		if (mustacheObject) {
 			Object.keys(mustacheObject).forEach((key) => {
 				if (!!key && !!mustacheObject[key]) {
@@ -284,12 +319,15 @@ export class MustacheHelper {
 		var parts: Array<string> = [];
 		/* Following regex is to fetch different parts in the text e.g. "test 'hello world' output" => test, 'hello world', output*/
 		var fetchPartsRegex = new RegExp(/[\'](.*?)[\']|[^ ]+/g);
+
 		var resultArray;
+
 		while ((resultArray = fetchPartsRegex.exec(text)) !== null) {
 			var part =
 				resultArray[1] === undefined || resultArray[1] === null
 					? resultArray[0]
 					: resultArray[1];
+
 			if (part === "''") {
 				part = "";
 			}

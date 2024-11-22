@@ -50,6 +50,7 @@ export class LocalGitRepoHelper {
 				for (let i = 1; i < 100; i++) {
 					let increamentalFileName =
 						LocalGitRepoHelper.getIncreamentalFileName(fileName, i);
+
 					if (files.indexOf(increamentalFileName) < 0) {
 						deferred.resolve(increamentalFileName);
 					}
@@ -81,6 +82,7 @@ export class LocalGitRepoHelper {
 	public async isGitRepository(): Promise<boolean> {
 		try {
 			await this.gitReference.status();
+
 			return true;
 		} catch (error) {
 			return false;
@@ -89,7 +91,9 @@ export class LocalGitRepoHelper {
 
 	public async getGitBranchDetails(): Promise<GitBranchDetails> {
 		let status = await this.gitReference.status();
+
 		let branch = status.current;
+
 		let remote = status.tracking
 			? status.tracking.substr(0, status.tracking.indexOf(branch) - 1)
 			: null;
@@ -106,8 +110,10 @@ export class LocalGitRepoHelper {
 
 	public async getGitRemoteUrl(remoteName: string): Promise<string | void> {
 		let remoteUrl = await this.gitReference.remote(["get-url", remoteName]);
+
 		if (remoteUrl) {
 			remoteUrl = (<string>remoteUrl).trim();
+
 			if (remoteUrl[remoteUrl.length - 1] === "/") {
 				remoteUrl = remoteUrl.substr(0, remoteUrl.length - 1);
 			}
@@ -135,6 +141,7 @@ export class LocalGitRepoHelper {
 	): Promise<string> {
 		fs.writeFileSync(pathToFile, content);
 		await vscode.workspace.saveAll(true);
+
 		return pathToFile;
 	}
 
@@ -151,6 +158,7 @@ export class LocalGitRepoHelper {
 		try {
 			await this.gitReference.add(files);
 			await this.gitReference.commit(commitMessage, files);
+
 			let gitLog = await this.gitReference.log();
 
 			if (repositoryDetails.remoteName && repositoryDetails.branch) {
@@ -172,12 +180,14 @@ export class LocalGitRepoHelper {
 				TracePoints.CommitAndPushPipelineFileFailed,
 				error,
 			);
+
 			throw error;
 		}
 	}
 
 	public async getGitRootDirectory(): Promise<string> {
 		let gitRootDir = await this.gitReference.revparse(["--show-toplevel"]);
+
 		return path.normalize(gitRootDir.trim());
 	}
 
@@ -209,6 +219,7 @@ export class LocalGitRepoHelper {
 				TracePoints.InitializeGitRepositoryFailed,
 				error,
 			);
+
 			throw error;
 		}
 	}
@@ -221,11 +232,14 @@ export class LocalGitRepoHelper {
 		targetfileName: string = null,
 	) {
 		let targetFile: string = targetfileName ? targetfileName : manifestFile;
+
 		let manifestPath: string = path.join(
 			path.dirname(__dirname),
 			"/templates/dependencies/",
 		);
+
 		let mustacheContext = new MustacheContext(inputs);
+
 		let manifestFilePath: string;
 
 		manifestFilePath = await pipelineConfigurer.getPathToManifestFile(
@@ -250,6 +264,7 @@ export class LocalGitRepoHelper {
 
 	public async readFileContent(pathToFile: string): Promise<string> {
 		const buf = fs.readFileSync(pathToFile);
+
 		return buf.toString();
 	}
 
@@ -258,6 +273,7 @@ export class LocalGitRepoHelper {
 		pathToFile: string,
 	): Promise<string> {
 		fs.writeFileSync(pathToFile, content);
+
 		return pathToFile;
 	}
 

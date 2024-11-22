@@ -30,6 +30,7 @@ export class StaticValidator {
 	): any {
 		if (!isNaN(Number(value.toString()))) {
 			var intValue = parseInt(value);
+
 			if (minValue && intValue < minValue) {
 				return utils.format(Messages.minValueMessage, minValue);
 			} else if (maxValue && intValue > maxValue) {
@@ -47,6 +48,7 @@ export class StaticValidator {
 		regexFlags: string = "",
 	): any {
 		var regex = new RegExp(pattern, regexFlags);
+
 		if (!regex.test(value)) {
 			return utils.format(
 				Messages.regexPatternNotMatchingMessage,

@@ -32,6 +32,7 @@ export class AzureResourceClient {
 					case TargetKind.FunctionAppLinux:
 					case TargetKind.WindowsApp:
 						return;
+
 					case TargetKind.LinuxContainerApp:
 					case TargetKind.FunctionApp:
 					default:
@@ -44,6 +45,7 @@ export class AzureResourceClient {
 				}
 			case TargetResourceType.AKS.toLowerCase():
 				return;
+
 			default:
 				throw new Error(
 					utils.format(
@@ -65,6 +67,7 @@ export class AzureResourceClient {
 
 		if (followNextLink) {
 			let nextLink: string = resourceListResult.nextLink;
+
 			while (!!nextLink) {
 				let nextResourceListResult =
 					await this.azureRmClient.resources.listNext(nextLink);
@@ -84,6 +87,7 @@ export class AzureResourceClient {
 	): Promise<GenericResource> {
 		let resource: GenericResource =
 			await this.azureRmClient.resources.getById(resourceId, apiVersion);
+
 		return resource;
 	}
 
@@ -117,6 +121,7 @@ export class AzureResourceClient {
 			resource.tags,
 			deploymentData,
 		);
+
 		return await this.azureRmClient.resources.updateById(
 			resource.id,
 			apiVersion,
@@ -129,8 +134,10 @@ export class AzureResourceClient {
 		deploymentData: string,
 	) {
 		let startNewRow: boolean = true;
+
 		let storageColumn: boolean = true; //if storageColumn = true -> store in Tag Key field, else Tag Value field
 		let newTagKey: string = "";
+
 		let newTagValue: string = "";
 
 		for (let tagName in resourceTags) {
@@ -142,6 +149,7 @@ export class AzureResourceClient {
 					newTagKey = tagName;
 					newTagValue = resourceTags[tagName];
 					resourceTags[tagName] = null;
+
 					break;
 				}
 				// check if resource tags can be stored in tag Value field
@@ -154,6 +162,7 @@ export class AzureResourceClient {
 					newTagKey = tagName;
 					newTagValue = resourceTags[tagName];
 					resourceTags[tagName] = null;
+
 					break;
 				}
 			}
@@ -161,6 +170,7 @@ export class AzureResourceClient {
 
 		if (newTagKey) {
 			let tempResourceTags = {};
+
 			for (let key in resourceTags) {
 				if (key !== newTagKey) {
 					tempResourceTags[key] = resourceTags[key];
@@ -185,6 +195,7 @@ export class AzureResourceClient {
 		}
 
 		resourceTags[newTagKey] = newTagValue;
+
 		return resourceTags;
 	}
 }
@@ -197,6 +208,9 @@ ApiVersions.set(TargetResourceType.ACR, "2019-05-01");
 ApiVersions.set(TargetResourceType.AKS, "2019-10-01");
 
 const DevopsInfoTagHeader: string = "hidden-DevOpsInfo:";
+
 const MaxTagKeyLength: number = 512;
+
 const MaxTagValueLength: number = 256;
+
 const MaxTagsRow: number = 50;

@@ -28,6 +28,7 @@ const Layer: string = "repoAnalysisHelper";
 export class RepoAnalysisHelper {
 	private azureSession: AzureSession;
 	private githubPatToken?: string;
+
 	constructor(azureSession: AzureSession, githubPatToken?: string) {
 		this.azureSession = azureSession;
 		this.githubPatToken = githubPatToken;
@@ -38,9 +39,11 @@ export class RepoAnalysisHelper {
 		workspacePath: string,
 	): Promise<RepositoryAnalysis> {
 		let repositoryAnalysisResponse;
+
 		try {
 			const serviceDefinition =
 				await RemoteServiceUrlHelper.getRepositoryAnalysisDefinition();
+
 			const client = this.getClient(serviceDefinition);
 
 			const repositoryDetails: CodeRepository = {} as CodeRepository;
@@ -62,6 +65,7 @@ export class RepoAnalysisHelper {
 			repositoryAnalysisResponse = await client.getRepositoryAnalysis(
 				repositoryAnalysisRequestBody,
 			);
+
 			if (
 				!!repositoryAnalysisResponse &&
 				repositoryAnalysisResponse.length === 0
@@ -71,6 +75,7 @@ export class RepoAnalysisHelper {
 		} catch (e) {
 			//Return empty if Repo Analysis fails
 			telemetryHelper.logError(Layer, TracePoints.RepoAnalysisFailed, e);
+
 			return null;
 		}
 
@@ -101,6 +106,7 @@ export class RepoAnalysisHelper {
 						if (!!analysis.buildTargetName) {
 							applicationSettings.buildTargetName =
 								analysis.buildTargetName;
+
 							if (analysis.language === SupportedLanguage.NODE) {
 								applicationSettings.settings[
 									RepoAnalysisConstants.PackageFilePath
@@ -115,6 +121,7 @@ export class RepoAnalysisHelper {
 												.PackageFilePath
 										],
 									);
+
 								if (
 									analysis.buildTargetName ===
 										RepoAnalysisConstants.Gulp &&
@@ -186,6 +193,7 @@ export class RepoAnalysisHelper {
 						if (!!analysis.deployTargetName) {
 							applicationSettings.deployTargetName =
 								analysis.deployTargetName;
+
 							if (
 								analysis.deployTargetName ===
 								RepoAnalysisConstants.AzureFunctions
@@ -209,6 +217,7 @@ export class RepoAnalysisHelper {
 				}
 			},
 		);
+
 		return parameters;
 	}
 
@@ -226,6 +235,7 @@ export class RepoAnalysisHelper {
 		serviceDefinition: IServiceUrlDefinition,
 	): IRepositoryAnalysisClient {
 		let client = null;
+
 		if (serviceDefinition.serviceFramework === ServiceFramework.Vssf) {
 			client = new PortalExtensionRepositoryAnalysisClient(
 				serviceDefinition.serviceUrl,

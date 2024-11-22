@@ -31,6 +31,7 @@ export class ModaRepositoryAnalysisClient implements IRepositoryAnalysisClient {
 				"Authorization": "Bearer " + this.githubPat,
 			},
 		};
+
 		return <RepositoryAnalysis>(
 			(await this.restClient.create(this.pathUrl, body, requestOptions))
 				.result

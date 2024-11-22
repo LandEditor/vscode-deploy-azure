@@ -21,6 +21,7 @@ export class ControlProvider {
 				TelemetryKeys.CurrentUserInput,
 				listName,
 			);
+
 			return await extensionVariables.ui.showQuickPick(
 				listItems,
 				options,
@@ -40,6 +41,7 @@ export class ControlProvider {
 		options: InputBoxOptions,
 	): Promise<string> {
 		telemetryHelper.setTelemetry(TelemetryKeys.CurrentUserInput, inputName);
+
 		return await extensionVariables.ui.showInputBox(options);
 	}
 
@@ -52,11 +54,13 @@ export class ControlProvider {
 			TelemetryKeys.CurrentUserInput,
 			informationIdentifier,
 		);
+
 		if (!!actions && actions.length > 0) {
 			let result = await window.showInformationMessage(
 				informationMessage,
 				...actions,
 			);
+
 			if (!result) {
 				throw new UserCancelledError(Messages.userCancelledExcecption);
 			}

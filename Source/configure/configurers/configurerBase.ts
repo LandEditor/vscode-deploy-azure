@@ -5,6 +5,7 @@ import { TemplateAssetType } from "../model/templateModels";
 
 export interface Configurer {
 	validatePermissions(): Promise<void>;
+
 	getInputs(inputs: WizardInputs): Promise<void>;
 	createPreRequisites(
 		inputs: WizardInputs,
@@ -17,10 +18,12 @@ export interface Configurer {
 		data: any,
 		inputs: WizardInputs,
 	): Promise<string>;
+
 	getPathToPipelineFile(
 		inputs: WizardInputs,
 		localGitRepoHelper: LocalGitRepoHelper,
 	): Promise<string>;
+
 	getPathToManifestFile(
 		inputs: WizardInputs,
 		localGitRepoHelper: LocalGitRepoHelper,

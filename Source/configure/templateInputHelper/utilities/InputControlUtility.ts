@@ -40,13 +40,16 @@ export class InputControlUtility {
 			case InputMode.None:
 			case InputMode.AzureSubscription:
 				return ControlType.None;
+
 			case InputMode.TextBox:
 			case InputMode.PasswordBox:
 				return ControlType.InputBox;
+
 			case InputMode.Combo:
 			case InputMode.CheckBox:
 			case InputMode.RadioButtons:
 				return ControlType.QuickPick;
+
 			default:
 				return null;
 		}
@@ -61,23 +64,30 @@ export class InputControlUtility {
 		}
 
 		var regex;
+
 		switch (dependencyType) {
 			case DependencyType.Input:
 				regex = /{{{inputs\.(\w+)}}}/g;
+
 				break;
 
 			case DependencyType.System:
 				regex = /{{{system\.(\w+)}}}/g;
+
 				break;
 
 			case DependencyType.Client:
 				regex = /{{{client\.(\w+)}}}/g;
+
 				break;
 		}
 
 		var dependentIds: string[] = [];
+
 		var uniqueDependentIdMap = new Map<string, null>();
+
 		var resultArray;
+
 		while ((resultArray = regex.exec(expression)) !== null) {
 			uniqueDependentIdMap.set(resultArray[1], null);
 		}
@@ -85,6 +95,7 @@ export class InputControlUtility {
 		uniqueDependentIdMap.forEach((value, key) => {
 			dependentIds.push(key);
 		});
+
 		return dependentIds;
 	}
 }

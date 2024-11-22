@@ -67,6 +67,7 @@ export class TemplateServiceClient implements ITemplateServiceClient {
 	): Promise<ExtendedPipelineTemplate> {
 		const requestUri =
 			this.templateServiceUri + this.extendedPipelineTemplateResource;
+
 		return this.restClient.sendRequest({
 			url: requestUri,
 			method: "GET",
@@ -87,6 +88,7 @@ export class TemplateServiceClient implements ITemplateServiceClient {
 	): Promise<ExtendedPipelineTemplate> {
 		const requestUri =
 			this.templateServiceUri + this.extendedPipelineTemplateResource;
+
 		return this.restClient.sendRequest({
 			url: requestUri,
 			method: "POST",

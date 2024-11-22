@@ -21,6 +21,7 @@ export class GitHubProvider {
 		}
 
 		let endCount: number = remoteUrl.indexOf(".git");
+
 		if (endCount < 0) {
 			endCount = remoteUrl.length;
 		}
@@ -40,8 +41,11 @@ export class GitHubProvider {
 	public static getFormattedGitHubApiUrlBase(remoteUrl: string): string {
 		let params: string[] =
 			GitHubProvider.getRepositoryIdFromUrl(remoteUrl).split("/");
+
 		let accountName: string = params[0];
+
 		let repoName: string = params[1];
+
 		return `https://api.github.com/repos/${accountName}/${repoName}`;
 	}
 }

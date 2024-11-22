@@ -54,12 +54,14 @@ export class InputControlProvider {
 		[key: string]: any;
 	}> {
 		let parameters: { [key: string]: any } = {};
+
 		for (let inputControl of this._inputControlsMap.values()) {
 			if (!!inputControl.getPropertyValue(constants.clientPropertyKey)) {
 				this.overrideParameters(inputControl);
 			}
 			this._setInputControlDataSourceInputs(inputControl);
 			this._initializeDynamicValidations(inputControl);
+
 			if (
 				this.repoAnalysisSettingInputProvider.inputFromRepoAnalysisSetting(
 					inputControl,
@@ -83,17 +85,21 @@ export class InputControlProvider {
 		let properties = inputControl.getPropertyValue(
 			constants.clientPropertyKey,
 		);
+
 		let arrayofProperties = Object.keys(properties);
 
 		arrayofProperties.forEach((element) => {
 			let key = element.split(".", 2)[1];
+
 			let newValue: any;
+
 			if (properties[element] !== null) {
 				let dependentInputControlArray = this._getInputDependencyArray(
 					inputControl,
 					[properties[element]],
 					false,
 				);
+
 				let dependentClientInputMap = this._getClientDependencyMap(
 					inputControl,
 					[properties[element]],
@@ -105,11 +111,13 @@ export class InputControlProvider {
 				);
 			}
 			inputControl.updateInputDescriptorProperty(key, newValue);
+
 			if (key === constants.inputModeProperty) {
 				let newInputMode: InputMode =
 					typeof newValue === "string"
 						? InputMode[newValue]
 						: newValue;
+
 				let updatedControlType =
 					InputControlUtility.getInputControlType(newInputMode);
 				inputControl.updateControlType(updatedControlType);
@@ -120,7 +128,9 @@ export class InputControlProvider {
 	private _createControls(): void {
 		for (let input of this._pipelineTemplate.parameters.inputs) {
 			let inputControl: InputControl = null;
+
 			let inputControlValue = this._getInputControlValue(input);
+
 			if (input.type !== InputDataType.Authorization) {
 				let controlType: ControlType =
 					InputControlUtility.getInputControlType(input.inputMode);
@@ -130,6 +140,7 @@ export class InputControlProvider {
 					controlType,
 					this.azureSession,
 				);
+
 				if (inputControl) {
 					this._inputControlsMap.set(input.id, inputControl);
 				}
@@ -139,6 +150,7 @@ export class InputControlProvider {
 
 	private _setInputControlDataSourceInputs(inputControl: InputControl): void {
 		let inputDes = inputControl.getInputDescriptor();
+
 		if (!!inputDes.dataSourceId) {
 			var inputControl = this._inputControlsMap.get(inputDes.id);
 			inputControl.dataSource = DataSourceExpression.parse(
@@ -151,6 +163,7 @@ export class InputControlProvider {
 					inputControl,
 					inputControl.dataSource.getInputDependencyArray(),
 				);
+
 				if (dependentInputControlArray) {
 					inputControl.dataSourceInputControls.push(
 						...dependentInputControlArray,
@@ -180,6 +193,7 @@ export class InputControlProvider {
 							this._pipelineTemplate.parameters.dataSources,
 							validation.dataSourceId,
 						);
+
 					if (validationDataSource) {
 						dataSourceToInputsMap.set(validationDataSource, []);
 
@@ -214,6 +228,7 @@ export class InputControlProvider {
 								var dependentInput = this._inputControlsMap.get(
 									dynamicValidationRequiredInputId,
 								);
+
 								if (dependentInput) {
 									dataSourceToInputsMap
 										.get(validationDataSource)
@@ -248,7 +263,9 @@ export class InputControlProvider {
 
 	private _setupInputControlDefaultValue(inputControl: InputControl): void {
 		var inputDes = inputControl.getInputDescriptor();
+
 		var defaultValue = inputDes.defaultValue;
+
 		if (!defaultValue) {
 			return;
 		}
@@ -260,10 +277,12 @@ export class InputControlProvider {
 				[defaultValue],
 				false,
 			);
+
 			var dependentClientInputMap = this._getClientDependencyMap(
 				inputControl,
 				[defaultValue],
 			);
+
 			defaultValue = this._computeMustacheValue(
 				defaultValue,
 				dependentInputControlArray,
@@ -283,6 +302,7 @@ export class InputControlProvider {
 		var dependentInputValues = this._getInputParameterValueIfAllSet(
 			dependentInputControlArray,
 		);
+
 		if (
 			dependentInputControlArray &&
 			dependentInputControlArray.length > 0 &&
@@ -315,7 +335,9 @@ export class InputControlProvider {
 		dependencyExpressionArray: string[],
 	): StringMap<any> {
 		var dependentClientControlMap: StringMap<any> = {};
+
 		var dependentClientInputs: string[] = [];
+
 		for (var dependencyExpression of dependencyExpressionArray) {
 			if (dependencyExpression) {
 				dependentClientInputs = dependentClientInputs.concat(
@@ -338,6 +360,7 @@ export class InputControlProvider {
 
 		for (var clientInput of uniqueDependentClientInputs) {
 			var dependentInputControl = this._context[clientInput];
+
 			if (dependentInputControl !== undefined) {
 				dependentClientControlMap[clientInput] = dependentInputControl;
 			} else {
@@ -355,7 +378,9 @@ export class InputControlProvider {
 		allowSelfDependency: boolean = true,
 	): InputControl[] {
 		var dependentInputControlArray: InputControl[] = [];
+
 		var dependentInputIds: string[] = [];
+
 		for (var dependencyExpression of dependencyExpressionArray) {
 			if (dependencyExpression) {
 				dependentInputIds = dependentInputIds.concat(
@@ -387,6 +412,7 @@ export class InputControlProvider {
 
 		for (var inputId of uniqueDependentInputIds) {
 			var dependentInputControl = this._inputControlsMap.get(inputId);
+
 			if (dependentInputControl) {
 				dependentInputControlArray.push(dependentInputControl);
 			} else {
@@ -403,6 +429,7 @@ export class InputControlProvider {
 		useDisplayValue: boolean = false,
 	): StringMap<any> {
 		var dependentInputValuesMap: StringMap<any> = {};
+
 		if (!dependentInputControlArray) {
 			return null;
 		}
@@ -424,6 +451,7 @@ export class InputControlProvider {
 		var visibilityRule = VisibilityHelper.parseVisibleRule(
 			inputControl.getVisibleRule(),
 		);
+
 		if (
 			visibilityRule !== null &&
 			visibilityRule.predicateRules !== null &&

@@ -1,17 +1,24 @@
 const parametersRegex = /(inputs|variables|assets|secrets|system)\.\w+/g;
+
 const enclosedParametersRegex =
 	/{{{?\s*(inputs|variables|assets|secrets|system)\.\w+\s*}?}}/g;
+
 const mustacheHelperRegex = /{{{?\s*#(\w+)(.*?)({?{{\s*\/\1)}?}}/;
 
 export function convertExpression(expression: string): string {
 	let match = expression.match(mustacheHelperRegex);
+
 	if (!match) {
 		return expression;
 	}
 	let localMustacheExpression = "";
+
 	let openingHelperFunc = "{{";
+
 	let closingHelperFunc = "}}";
+
 	let parts = [];
+
 	let helperName = "";
 
 	if (expression.startsWith("{{{")) {
@@ -31,13 +38,16 @@ export function convertExpression(expression: string): string {
 			expression.substring(0, expression.indexOf(" ")) +
 				closingHelperFunc,
 		);
+
 		let part = expression
 			.substring(
 				expression.indexOf(" "),
 				expression.indexOf(closingHelperFunc),
 			)
 			.trim();
+
 		let input = parametersRegex.exec(part);
+
 		while (input) {
 			part = replaceAtIndex(
 				part,
@@ -100,7 +110,9 @@ export function convertExpression(expression: string): string {
 
 export function convertStringMustachExpression(text: string): string {
 	let helperRegExp = /{?{{\s*#(\w+)(.*?)({?{{\s*\/\1)}}}?/g;
+
 	let result = helperRegExp.exec(text);
+
 	while (result) {
 		let exp = convertExpression(result[0]);
 		text = replaceAtIndex(text, result[0], exp, result.index);
@@ -111,6 +123,7 @@ export function convertStringMustachExpression(text: string): string {
 
 export function sanitizeExpression(text: string): string {
 	let result = enclosedParametersRegex.exec(text);
+
 	while (result) {
 		if (!result[0].startsWith("{{{")) {
 			text = replaceAtIndex(
@@ -128,6 +141,7 @@ export function sanitizeExpression(text: string): string {
 export function convertToLocalMustacheExpression(object: any): any {
 	if (typeof object === "string") {
 		object = sanitizeExpression(object);
+
 		return convertStringMustachExpression(object);
 	}
 
@@ -155,6 +169,7 @@ function replaceAtIndex(
 ) {
 	if (text.indexOf(searchValue, index) !== -1) {
 		let preStr = text.substr(0, index);
+
 		let postStr = text.substr(index + searchValue.length);
 		text = preStr + replaceValue + postStr;
 	}

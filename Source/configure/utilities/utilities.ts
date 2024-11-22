@@ -9,8 +9,10 @@ export class Utilities {
 export class WhiteListedError extends Error {
 	constructor(message?: string, error?: any) {
 		super(message || error.message);
+
 		if (error) {
 			const errorClone = JSON.parse(JSON.stringify(error));
+
 			for (var attribute in errorClone) {
 				this[attribute] = errorClone[attribute];
 			}

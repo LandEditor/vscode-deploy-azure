@@ -22,6 +22,7 @@ export class TemplateServiceClientFactory {
 
 		const serviceDefinition =
 			await RemoteServiceUrlHelper.getTemplateServiceDefinition();
+
 		if (serviceDefinition.serviceFramework === ServiceFramework.Vssf) {
 			this.client = new TemplateServiceClient(
 				serviceDefinition.serviceUrl,

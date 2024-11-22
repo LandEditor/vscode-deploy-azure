@@ -23,6 +23,7 @@ export class RepoAnalysisSettingInputProvider {
 		const repoAnalysisSettingKey = inputControl.getPropertyValue(
 			this.repoAnalysisSettingKey,
 		);
+
 		return !!repoAnalysisSettingKey && this.repoAnalysisSettings.length > 0;
 	}
 
@@ -32,10 +33,12 @@ export class RepoAnalysisSettingInputProvider {
 		const repoAnalysisSettingKey = inputControl.getPropertyValue(
 			this.repoAnalysisSettingKey,
 		);
+
 		if (this.selectedRepoAnalysisSettingIndex !== -1) {
 			let value =
 				this.repoAnalysisSettings[this.selectedRepoAnalysisSettingIndex]
 					.settings[repoAnalysisSettingKey];
+
 			if (!value || (Array.isArray(value) && value.length === 0)) {
 				await this.setValueIfNotPresentInRepoAnalysis(
 					inputControl,
@@ -44,6 +47,7 @@ export class RepoAnalysisSettingInputProvider {
 			} else {
 				if (Array.isArray(value)) {
 					let selectedValue = value[0];
+
 					if (value.length > 1) {
 						const possibleValues = value.map((element) => ({
 							label: element,
@@ -74,6 +78,7 @@ export class RepoAnalysisSettingInputProvider {
 					}
 					let keyValue =
 						analysisSetting.settings[repoAnalysisSettingKey];
+
 					if (Array.isArray(keyValue)) {
 						if (keyValue.length === 0) {
 							return;
@@ -88,6 +93,7 @@ export class RepoAnalysisSettingInputProvider {
 					}
 				},
 			);
+
 			if (settingIndexMap.size === 0) {
 				await this.setValueIfNotPresentInRepoAnalysis(
 					inputControl,
@@ -97,6 +103,7 @@ export class RepoAnalysisSettingInputProvider {
 				let possibleValues = Array.from(settingIndexMap.keys()).map(
 					(value) => ({ label: value, data: value }),
 				);
+
 				let selectedValue: { label: string; data: any };
 
 				if (possibleValues.length === 1) {
@@ -116,6 +123,7 @@ export class RepoAnalysisSettingInputProvider {
 					this.repoAnalysisSettings[
 						settingIndexMap.get(selectedValue.data)[0]
 					].settings[repoAnalysisSettingKey];
+
 				if (
 					inputControl.getInputDataType() === InputDataType.String &&
 					Array.isArray(repoAnalysisValue)
@@ -124,6 +132,7 @@ export class RepoAnalysisSettingInputProvider {
 						label: value,
 						data: value,
 					}));
+
 					if (possibleValues.length === 1) {
 						selectedValue = possibleValues[0];
 					} else {
@@ -155,7 +164,9 @@ export class RepoAnalysisSettingInputProvider {
 			TracePoints.SetInputControlValueFromRepoAnalysisResult,
 			error,
 		);
+
 		let value = inputControl.getInputDescriptor().defaultValue;
+
 		if (!value) {
 			value = await new ControlProvider().showInputBox(
 				repoAnalysisSettingKey,

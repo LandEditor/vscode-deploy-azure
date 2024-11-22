@@ -9,6 +9,7 @@ export interface IProvisioningConfigurer {
 		provisioningConfiguration: ProvisioningConfiguration,
 		wizardInputs: WizardInputs,
 	): Promise<ProvisioningConfiguration>;
+
 	getProvisioningPipeline(
 		jobId: string,
 		githubOrg: string,

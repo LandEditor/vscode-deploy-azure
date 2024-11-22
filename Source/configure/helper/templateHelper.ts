@@ -45,6 +45,7 @@ export async function mergingRepoAnalysisResults(
 	repoAnalysisParameters: RepositoryAnalysis,
 ): Promise<AnalysisResult> {
 	let localRepoAnalysisResult = await analyzeRepo(sourceRepository.localPath);
+
 	let analysisResult = localRepoAnalysisResult;
 
 	//If Repo analysis fails then we'll go with the basic existing analysis
@@ -93,6 +94,7 @@ export function getTargetType(template: TemplateInfo): TargetResourceType {
 
 export function getTargetKind(template: TemplateInfo): TargetKind {
 	var targetKind: TargetKind;
+
 	if (template.attributes.deployTarget.toLowerCase().includes("webapp")) {
 		if (
 			template.attributes.deployTarget.toLowerCase().includes("container")
@@ -128,20 +130,26 @@ export async function analyzeRepoAndListAppropriatePipeline(
 	);
 
 	let templateList: { [key: string]: LocalPipelineTemplate[] } = {};
+
 	switch (sourceRepository.repositoryProvider) {
 		case RepositoryProvider.AzureRepos:
 			templateList = azurePipelineTemplates;
+
 			break;
+
 		case RepositoryProvider.Github:
 			templateList = extensionVariables.enableGitHubWorkflow
 				? githubWorklowTemplates
 				: azurePipelineTemplates;
+
 			break;
+
 		default:
 			throw new Error(Messages.cannotIdentifyRespositoryDetails);
 	}
 
 	let templateResult: LocalPipelineTemplate[] = [];
+
 	let uniqueLanguages = analysisResult.languages.filter(this.uniqueValues);
 
 	uniqueLanguages.forEach((language) => {
@@ -156,6 +164,7 @@ export async function analyzeRepoAndListAppropriatePipeline(
 					);
 				}
 				break;
+
 			case SupportedLanguage.NODE:
 				if (
 					templateList[SupportedLanguage.NODE] &&
@@ -166,6 +175,7 @@ export async function analyzeRepoAndListAppropriatePipeline(
 					);
 				}
 				break;
+
 			case SupportedLanguage.PYTHON:
 				if (
 					templateList[SupportedLanguage.PYTHON] &&
@@ -176,6 +186,7 @@ export async function analyzeRepoAndListAppropriatePipeline(
 					);
 				}
 				break;
+
 			case SupportedLanguage.DOTNETCORE:
 				if (
 					templateList[SupportedLanguage.DOTNETCORE] &&
@@ -186,6 +197,7 @@ export async function analyzeRepoAndListAppropriatePipeline(
 					);
 				}
 				break;
+
 			case SupportedLanguage.NONE:
 				if (
 					templateList[SupportedLanguage.NONE] &&
@@ -196,6 +208,7 @@ export async function analyzeRepoAndListAppropriatePipeline(
 					);
 				}
 				break;
+
 			default:
 				break;
 		}
@@ -216,7 +229,9 @@ export async function analyzeRepoAndListAppropriatePipeline(
 					azurePipelineTargetBasedTemplates[
 						AzureTarget.FunctionApp
 					].concat(templateResult);
+
 				break;
+
 			case RepositoryProvider.Github:
 				templateResult = extensionVariables.enableGitHubWorkflow
 					? githubWorkflowTargetBasedTemplates[
@@ -225,7 +240,9 @@ export async function analyzeRepoAndListAppropriatePipeline(
 					: azurePipelineTargetBasedTemplates[
 							AzureTarget.FunctionApp
 						].concat(templateResult);
+
 				break;
+
 			default:
 				break;
 		}
@@ -260,6 +277,7 @@ async function convertToPipelineTemplate(
 	remoteTemplates: TemplateInfo[],
 ): Promise<PipelineTemplate[]> {
 	const pipelineTemplates: PipelineTemplate[] = [];
+
 	if (!!remoteTemplates) {
 		remoteTemplates.forEach((templateInfo: TemplateInfo) => {
 			const remoteTemplate: RemotePipelineTemplate = {
@@ -283,7 +301,9 @@ export async function getFilteredTemplates(
 	resourceType: string,
 ): Promise<TemplateInfo[]> {
 	const client = await TemplateServiceClientFactory.getClient();
+
 	let filteredTemplates: TemplateInfo[];
+
 	switch (resourceType) {
 		case TargetResourceType.AKS:
 			await telemetryHelper.executeFunctionWithTimeTelemetry(async () => {
@@ -292,7 +312,9 @@ export async function getFilteredTemplates(
 					"Azure:AKS",
 				);
 			}, TelemetryKeys.TemplateServiceDuration);
+
 			return filteredTemplates;
+
 		default:
 			return null;
 	}
@@ -300,10 +322,12 @@ export async function getFilteredTemplates(
 
 export async function getTemplates(repoAnalysisParameters: RepositoryAnalysis) {
 	const client = await TemplateServiceClientFactory.getClient();
+
 	let templates: TemplateInfo[];
 	await telemetryHelper.executeFunctionWithTimeTelemetry(async () => {
 		templates = await client.getTemplates(repoAnalysisParameters);
 	}, TelemetryKeys.TemplateServiceDuration);
+
 	return templates;
 }
 
@@ -316,7 +340,9 @@ export async function analyzeRepoAndListAppropriatePipeline2(
 	resource?: GenericResource,
 ): Promise<PipelineTemplate[]> {
 	let pipelineTemplates: PipelineTemplate[] = [];
+
 	let remoteTemplates: TemplateInfo[] = [];
+
 	let localPipelineTemplates: LocalPipelineTemplate[] =
 		await this.analyzeRepoAndListAppropriatePipeline(
 			sourceRepository,
@@ -343,6 +369,7 @@ export async function analyzeRepoAndListAppropriatePipeline2(
 			pipelineTemplates = pipelineTemplates.sort((a, b) => {
 				return b.templateWeight - a.templateWeight;
 			});
+
 			return pipelineTemplates;
 		} catch (err) {
 			pipelineTemplates = [];
@@ -351,6 +378,7 @@ export async function analyzeRepoAndListAppropriatePipeline2(
 				TracePoints.TemplateServiceCallFailed,
 				err,
 			);
+
 			return null;
 		}
 	} else {
@@ -362,9 +390,11 @@ export async function getTemplateParameters(
 	templateId: string,
 ): Promise<ExtendedPipelineTemplate> {
 	let parameters: ExtendedPipelineTemplate;
+
 	try {
 		let serviceClient = await TemplateServiceClientFactory.getClient();
 		parameters = await serviceClient.getTemplateParameters(templateId);
+
 		return parameters;
 	} catch (e) {
 		telemetryHelper.logError(
@@ -372,6 +402,7 @@ export async function getTemplateParameters(
 			TracePoints.UnableToGetTemplateParameters,
 			e,
 		);
+
 		throw new Error(Messages.UnableToGetTemplateParameters);
 	}
 }
@@ -389,6 +420,7 @@ export function getPipelineTemplatesForAllWebAppKind(
 		extensionVariables.enableGitHubWorkflow
 	) {
 		pipelineTemplates = githubWorklowTemplates[language];
+
 		if (isFunctionAppType(targetKind)) {
 			pipelineTemplates = pipelineTemplates.concat(
 				githubWorkflowTargetBasedTemplates[AzureTarget.FunctionApp],
@@ -396,6 +428,7 @@ export function getPipelineTemplatesForAllWebAppKind(
 		}
 	} else {
 		pipelineTemplates = azurePipelineTemplates[language];
+
 		if (isFunctionAppType(targetKind)) {
 			pipelineTemplates = pipelineTemplates.concat(
 				azurePipelineTargetBasedTemplates[AzureTarget.FunctionApp],
@@ -426,6 +459,7 @@ export async function renderContent(
 				...MustacheHelper.getHelperMethods(),
 				...context,
 			};
+
 			let fileContent = Mustache.render(data, updatedContext);
 			deferred.resolve(fileContent);
 		}
@@ -439,15 +473,18 @@ export function getDockerPort(
 	relativeDockerFilePath?: string,
 ): string {
 	let dockerfilePath = relativeDockerFilePath;
+
 	if (!dockerfilePath) {
 		let files = fs.readdirSync(repoPath);
 		files.some((fileName) => {
 			if (fileName.toLowerCase().endsWith("dockerfile")) {
 				dockerfilePath = fileName;
+
 				return true;
 			}
 			return false;
 		});
+
 		if (!dockerfilePath) {
 			return null;
 		}
@@ -458,13 +495,17 @@ export function getDockerPort(
 			path.join(repoPath, dockerfilePath),
 			"utf8",
 		);
+
 		let index = dockerContent.toLowerCase().indexOf("expose ");
+
 		if (index !== -1) {
 			let temp = dockerContent.substring(index + "expose ".length);
+
 			let ports = temp
 				.substr(0, temp.indexOf("\n"))
 				.split(" ")
 				.filter(Boolean);
+
 			if (ports.length) {
 				return ports[0];
 			}
@@ -518,16 +559,20 @@ function isDotnetCoreRepo(files: string[]): boolean {
 
 function isNodeRepo(files: string[]): boolean {
 	let nodeFilesRegex = "\\.ts$|\\.js$|package\\.json$|node_modules";
+
 	return files.some((file) => {
 		let result = new RegExp(nodeFilesRegex).test(file.toLowerCase());
+
 		return result;
 	});
 }
 
 function isPythonRepo(files: string[]): boolean {
 	let pythonRegex = ".py$";
+
 	return files.some((file) => {
 		let result = new RegExp(pythonRegex).test(file.toLowerCase());
+
 		return result;
 	});
 }

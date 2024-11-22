@@ -29,6 +29,7 @@ export class RemoteServiceUrlHelper {
 
 	public static async getTemplateServiceDefinition(): Promise<IServiceUrlDefinition> {
 		const deployment = process.env["DEPLOY_TO_AZURE_EXT_ENVIRONMENT"];
+
 		if (deployment != undefined && deployment === "development") {
 			return {
 				serviceFramework: ServiceFramework.Moda,
@@ -47,6 +48,7 @@ export class RemoteServiceUrlHelper {
 
 	public static async getRepositoryAnalysisDefinition(): Promise<IServiceUrlDefinition> {
 		const deployment = process.env["DEPLOY_TO_AZURE_EXT_ENVIRONMENT"];
+
 		if (deployment != undefined && deployment === "staging") {
 			return this.getServiceurlDefinition(
 				this.repoAnalysisStagingRedirectUrl,
@@ -58,6 +60,7 @@ export class RemoteServiceUrlHelper {
 
 	public static async getProvisioningServiceDefinition(): Promise<IServiceUrlDefinition> {
 		const deployment = process.env["DEPLOY_TO_AZURE_EXT_ENVIRONMENT"];
+
 		if (deployment != undefined && deployment === "development") {
 			return {
 				serviceFramework: ServiceFramework.Moda,
@@ -80,20 +83,24 @@ export class RemoteServiceUrlHelper {
 		const result = <IServiceUrlDefinition>{
 			serviceFramework: ServiceFramework.Vssf,
 		};
+
 		try {
 			const requestOptions = {
 				allowRedirects: false,
 			};
+
 			const restClient = new RestClient(
 				"deploy-to-azure",
 				"",
 				[],
 				requestOptions,
 			);
+
 			const response = await restClient.client.get(
 				redirectUrl,
 				requestOptions,
 			);
+
 			if (
 				response.message.statusCode === 301 ||
 				response.message.statusCode === 302

@@ -54,6 +54,7 @@ export class AppServiceClient extends AzureResourceClient {
 		let parsedResourceId: ParsedAzureResourceId = new ParsedAzureResourceId(
 			resourceId,
 		);
+
 		return await this.webSiteManagementClient.webApps.get(
 			parsedResourceId.resourceGroup,
 			parsedResourceId.resourceName,
@@ -66,6 +67,7 @@ export class AppServiceClient extends AzureResourceClient {
 		let resourceList: ResourceListResult = await this.getResourceList(
 			AppServiceClient.resourceType,
 		);
+
 		if (!!filtersForResourceKind && filtersForResourceKind.length > 0) {
 			let filteredResourceList: ResourceListResult = [];
 
@@ -88,8 +90,10 @@ export class AppServiceClient extends AzureResourceClient {
 		resourceId: string,
 	): Promise<string> {
 		const deferred: Q.Deferred<string> = Q.defer<string>();
+
 		const parsedResourceId: ParsedAzureResourceId =
 			new ParsedAzureResourceId(resourceId);
+
 		let publishProfile = "";
 		this.webSiteManagementClient.webApps.listPublishingProfileXmlWithSecrets(
 			parsedResourceId.resourceGroup,
@@ -107,6 +111,7 @@ export class AppServiceClient extends AzureResourceClient {
 				});
 			},
 		);
+
 		return deferred.promise;
 	}
 
@@ -116,6 +121,7 @@ export class AppServiceClient extends AzureResourceClient {
 
 	public async getAzurePipelineUrl(resourceId: string): Promise<string> {
 		let metadata = await this.getAppServiceMetadata(resourceId);
+
 		if (metadata.properties["VSTSRM_BuildDefinitionWebAccessUrl"]) {
 			return metadata.properties["VSTSRM_BuildDefinitionWebAccessUrl"];
 		}
@@ -129,6 +135,7 @@ export class AppServiceClient extends AzureResourceClient {
 		let parsedResourceId: ParsedAzureResourceId = new ParsedAzureResourceId(
 			resourceId,
 		);
+
 		return this.webSiteManagementClient.webApps.getConfiguration(
 			parsedResourceId.resourceGroup,
 			parsedResourceId.resourceName,
@@ -140,9 +147,11 @@ export class AppServiceClient extends AzureResourceClient {
 	): Promise<SiteConfigResource> {
 		let siteConfig = await this.getAppServiceConfig(resourceId);
 		siteConfig.scmType = ScmType.VSTSRM;
+
 		let parsedResourceId: ParsedAzureResourceId = new ParsedAzureResourceId(
 			resourceId,
 		);
+
 		return this.webSiteManagementClient.webApps.updateConfiguration(
 			parsedResourceId.resourceGroup,
 			parsedResourceId.resourceName,
@@ -156,6 +165,7 @@ export class AppServiceClient extends AzureResourceClient {
 		let parsedResourceId: ParsedAzureResourceId = new ParsedAzureResourceId(
 			resourceId,
 		);
+
 		return this.webSiteManagementClient.webApps.listMetadata(
 			parsedResourceId.resourceGroup,
 			parsedResourceId.resourceName,
@@ -169,6 +179,7 @@ export class AppServiceClient extends AzureResourceClient {
 		let parsedResourceId: ParsedAzureResourceId = new ParsedAzureResourceId(
 			resourceId,
 		);
+
 		return this.webSiteManagementClient.webApps.updateMetadata(
 			parsedResourceId.resourceGroup,
 			parsedResourceId.resourceName,
@@ -188,12 +199,14 @@ export class AppServiceClient extends AzureResourceClient {
 
 		// create deployment object
 		let deploymentId = uuid();
+
 		let deployment = this.createDeploymentObject(
 			deploymentId,
 			deploymentMessage,
 			author,
 			deployer,
 		);
+
 		return this.webSiteManagementClient.webApps.createDeployment(
 			parsedResourceId.resourceGroup,
 			parsedResourceId.resourceName,
@@ -241,6 +254,7 @@ export class AppServiceClient extends AzureResourceClient {
 	public async isScmTypeSet(resourceId: string): Promise<boolean> {
 		// Check for SCM type, if its value is set then a pipeline is already setup.
 		let siteConfig = await this.getAppServiceConfig(resourceId);
+
 		if (
 			!!siteConfig.scmType &&
 			siteConfig.scmType.toLowerCase() !== ScmType.NONE.toLowerCase()
@@ -249,6 +263,7 @@ export class AppServiceClient extends AzureResourceClient {
 				TelemetryKeys.ScmType,
 				siteConfig.scmType.toLowerCase(),
 			);
+
 			return true;
 		}
 
