@@ -36,6 +36,7 @@ interface DraftFile {
 }
 
 const Layer: string = "ProvisioningConfigurer";
+
 export class ProvisioningConfigurer implements IProvisioningConfigurer {
 	private provisioningServiceClient: IProvisioningServiceClient;
 	private queuedPipelineUrl: string;

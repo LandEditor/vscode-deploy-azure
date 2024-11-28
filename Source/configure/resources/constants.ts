@@ -1,5 +1,7 @@
 export const AzureDevOpsBaseUrl: string = "https://dev.azure.com";
+
 export const HostedVS2017QueueName: string = "Hosted VS2017";
+
 export const ReservedHostNames: string[] = [
 	// Reserved names from https://dev.azure.com/mseng/AzureDevOps/_git/AzureDevOps?path=%2FMps%2FService%2FNameResolution%2FServicing%2FHost%2FDeployment%2FGroups%2FInstall%2FInstallNameResolutionService.xml&version=GBmaster
 	// Forbidden
@@ -151,27 +153,47 @@ export const PipelineTemplateLabels = {
 };
 
 export const SelectFolderOrRepository = "selectFolderOrRepository";
+
 export const SelectOrganization = "selectOrganization";
+
 export const SelectProject = "selectProject";
+
 export const EnterOrganizationName = "enterOrganizationName";
+
 export const SelectPipelineTemplate = "selectPipelineTemplate";
+
 export const SelectSubscription = "selectSubscription";
+
 export const SelectWorkspace = "selectWorkspace";
+
 export const SelectWebApp = "selectWebApp";
+
 export const SelectFunctionApp = "selectFunctionApp";
+
 export const GitHubPat = "gitHubPat";
+
 export const SelectFromMultipleWorkSpace = "selectFromMultipleWorkSpace";
+
 export const SelectRemoteForRepo = "selectRemoteForRepo";
+
 export const VstsRmScmType = "VSTSRM";
+
 export const BrowseNotAvailableConfigurePipeline =
 	"BrowseNotAvailableConfigurePipeline";
+
 export const DeploymentMessageType = "CDDeploymentConfiguration";
+
 export const SetupAlreadyExists = "SetupAlreadyExists";
+
 export const Browse = "Browse";
+
 export const TargetResource = "targetResource";
+
 export const ResourceDynamicValidationFailure =
 	"ResourceDynamicValidationFailure";
+
 export const EnterGithubRepositoryName = "EnterGithubRepositoryName";
+
 export const SelectGitHubOrganization = "selectGitHubOrganization";
 
 //RepoAnalysis constants expected in response of Repository Analysis Service
@@ -196,12 +218,19 @@ export const RepoAnalysisConstants = {
 };
 
 export const deploymentManifest: string = "deployment";
+
 export const serviceManifest: string = "service";
+
 export const serviceIngressManifest: string = "service-ingress";
+
 export const ingressManifest: string = "ingress";
+
 export const azurePipeline: string = "Azure-pipeline";
+
 export const githubWorkflow: string = "Github-workflow";
+
 export const clientPropertyKey: string = "ms.client.vscode";
+
 export const inputModeProperty: string = "inputMode";
 
 export const ExceptionType = {

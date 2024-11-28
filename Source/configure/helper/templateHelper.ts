@@ -40,6 +40,7 @@ import { MustacheHelper } from "./mustacheHelper";
 import { telemetryHelper } from "./telemetryHelper";
 
 const Layer: string = "templateHelper";
+
 export async function mergingRepoAnalysisResults(
 	sourceRepository: GitRepositoryParameters,
 	repoAnalysisParameters: RepositoryAnalysis,

@@ -67,6 +67,7 @@ import { Utilities, WhiteListedError } from "./utilities/utilities";
 const uuid = require("uuid/v4");
 
 const Layer: string = "configure";
+
 export let UniqueResourceNameSuffix: string = uuid().substr(0, 5);
 
 export async function configurePipeline(node: IResourceNode | vscode.Uri) {

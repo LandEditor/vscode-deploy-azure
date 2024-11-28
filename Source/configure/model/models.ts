@@ -38,6 +38,7 @@ class ExtensionVariables implements UIExtensionVariables {
 }
 
 let extensionVariables = new ExtensionVariables();
+
 export { extensionVariables };
 
 export class WizardInputs {

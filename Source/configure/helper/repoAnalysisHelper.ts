@@ -25,6 +25,7 @@ import {
 import { telemetryHelper } from "./telemetryHelper";
 
 const Layer: string = "repoAnalysisHelper";
+
 export class RepoAnalysisHelper {
 	private azureSession: AzureSession;
 	private githubPatToken?: string;
