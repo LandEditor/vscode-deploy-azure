@@ -16,6 +16,7 @@ export async function getSubscriptionSession(
 
 	let currentSubscription: {
 		session: AzureSession;
+
 		subscription: SubscriptionModels.Subscription;
 	} = extensionVariables.azureAccountExtensionApi.subscriptions.find(
 		(subscription) =>

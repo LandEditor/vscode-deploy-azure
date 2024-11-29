@@ -29,9 +29,13 @@ const Layer: string = "InputControlProvider";
 
 export class InputControlProvider {
 	private _pipelineTemplate: ExtendedPipelineTemplate;
+
 	private _inputControlsMap: Map<string, InputControl>;
+
 	private azureSession: AzureSession;
+
 	private repoAnalysisSettingInputProvider: RepoAnalysisSettingInputProvider;
+
 	private _context: StringMap<any>;
 
 	constructor(
@@ -40,13 +44,18 @@ export class InputControlProvider {
 		context: StringMap<any>,
 	) {
 		this._pipelineTemplate = pipelineTemplate;
+
 		this._inputControlsMap = new Map<string, InputControl>();
+
 		this.azureSession = azureSession;
+
 		this.repoAnalysisSettingInputProvider =
 			new RepoAnalysisSettingInputProvider(
 				context["repoAnalysisSettings"] as ApplicationSettings[],
 			);
+
 		this._context = context;
+
 		this._createControls();
 	}
 
@@ -59,7 +68,9 @@ export class InputControlProvider {
 			if (!!inputControl.getPropertyValue(constants.clientPropertyKey)) {
 				this.overrideParameters(inputControl);
 			}
+
 			this._setInputControlDataSourceInputs(inputControl);
+
 			this._initializeDynamicValidations(inputControl);
 
 			if (
@@ -72,12 +83,16 @@ export class InputControlProvider {
 				);
 			} else {
 				this._setInputControlVisibility(inputControl);
+
 				this._setupInputControlDefaultValue(inputControl);
+
 				await inputControl.setInputControlValue();
 			}
+
 			parameters[inputControl.getInputControlId()] =
 				inputControl.getValue();
 		}
+
 		return parameters;
 	}
 
@@ -104,12 +119,14 @@ export class InputControlProvider {
 					inputControl,
 					[properties[element]],
 				);
+
 				newValue = this._computeMustacheValue(
 					properties[element],
 					dependentInputControlArray,
 					dependentClientInputMap,
 				);
 			}
+
 			inputControl.updateInputDescriptorProperty(key, newValue);
 
 			if (key === constants.inputModeProperty) {
@@ -120,6 +137,7 @@ export class InputControlProvider {
 
 				let updatedControlType =
 					InputControlUtility.getInputControlType(newInputMode);
+
 				inputControl.updateControlType(updatedControlType);
 			}
 		});
@@ -134,6 +152,7 @@ export class InputControlProvider {
 			if (input.type !== InputDataType.Authorization) {
 				let controlType: ControlType =
 					InputControlUtility.getInputControlType(input.inputMode);
+
 				inputControl = new InputControl(
 					input,
 					inputControlValue,
@@ -153,6 +172,7 @@ export class InputControlProvider {
 
 		if (!!inputDes.dataSourceId) {
 			var inputControl = this._inputControlsMap.get(inputDes.id);
+
 			inputControl.dataSource = DataSourceExpression.parse(
 				inputDes.dataSourceId,
 				this._pipelineTemplate.parameters.dataSources,
@@ -186,6 +206,7 @@ export class InputControlProvider {
 			inputDes.dynamicValidations.length > 0
 		) {
 			var dataSourceToInputsMap = new Map<DataSource, InputControl[]>();
+
 			inputDes.dynamicValidations.forEach(
 				(validation: InputDynamicValidation) => {
 					var validationDataSource =
@@ -201,18 +222,21 @@ export class InputControlProvider {
 							DataSourceUtility.getDependentInputIdList(
 								validationDataSource.endpointUrlStem,
 							);
+
 						dynamicValidationRequiredInputIds =
 							dynamicValidationRequiredInputIds.concat(
 								DataSourceUtility.getDependentInputIdList(
 									validationDataSource.requestBody,
 								),
 							);
+
 						dynamicValidationRequiredInputIds =
 							dynamicValidationRequiredInputIds.concat(
 								DataSourceUtility.getDependentInputIdList(
 									validationDataSource.resultTemplate,
 								),
 							);
+
 						dynamicValidationRequiredInputIds =
 							dynamicValidationRequiredInputIds.concat(
 								DataSourceUtility.getDependentInputIdList(
@@ -223,6 +247,7 @@ export class InputControlProvider {
 						dynamicValidationRequiredInputIds = Array.from(
 							new Set(dynamicValidationRequiredInputIds),
 						);
+
 						dynamicValidationRequiredInputIds.forEach(
 							(dynamicValidationRequiredInputId) => {
 								var dependentInput = this._inputControlsMap.get(
@@ -237,6 +262,7 @@ export class InputControlProvider {
 									let error: Error = new Error(
 										`Dependent input ${dynamicValidationRequiredInputId} specified for input ${inputDes.id} is not present in pipeline template ${this._pipelineTemplate.id}`,
 									);
+
 									telemetryHelper.logError(
 										Layer,
 										TracePoints.InitializeDynamicValidation,
@@ -249,6 +275,7 @@ export class InputControlProvider {
 						let error = new Error(
 							`validation data source ${validation.dataSourceId} specified for input ${inputDes.id} is not present in pipeline template ${this._pipelineTemplate.id}`,
 						);
+
 						telemetryHelper.logError(
 							Layer,
 							TracePoints.InitializeDynamicValidation,
@@ -257,6 +284,7 @@ export class InputControlProvider {
 					}
 				},
 			);
+
 			inputControl.setValidationDataSources(dataSourceToInputsMap);
 		}
 	}
@@ -269,6 +297,7 @@ export class InputControlProvider {
 		if (!defaultValue) {
 			return;
 		}
+
 		if (
 			InputControlUtility.doesExpressionContainsDependency(defaultValue)
 		) {
@@ -289,6 +318,7 @@ export class InputControlProvider {
 				dependentClientInputMap,
 			);
 		}
+
 		if (defaultValue !== inputControl.getValue()) {
 			inputControl.setValue(defaultValue);
 		}
@@ -369,6 +399,7 @@ export class InputControlProvider {
 				);
 			}
 		}
+
 		return dependentClientControlMap;
 	}
 
@@ -421,6 +452,7 @@ export class InputControlProvider {
 				);
 			}
 		}
+
 		return dependentInputControlArray;
 	}
 
@@ -441,9 +473,11 @@ export class InputControlProvider {
 					"Unable to get the input value, inputs order may not be correct",
 				);
 			}
+
 			dependentInputValuesMap[dependentInputControl.getInputControlId()] =
 				dependentInputControl.getValue();
 		}
+
 		return dependentInputValuesMap;
 	}
 
@@ -472,6 +506,7 @@ export class InputControlProvider {
 					}
 				},
 			);
+
 			inputControl.setVisibility(
 				VisibilityHelper.evaluateVisibility(
 					visibilityRule,

@@ -103,6 +103,7 @@ export interface DataSource {
 	 * HTTP method for request
 	 */
 	httpMethod?: string;
+
 	id: string;
 	/**
 	 * Serialized string for request body
@@ -272,8 +273,11 @@ export interface InputValue {
 
 export interface Variable {
 	id: string;
+
 	value: string;
+
 	logTelemetry?: boolean;
+
 	hashTelemetryValue?: boolean;
 }
 
@@ -281,7 +285,9 @@ export interface Asset {
 	id: string;
 	// tslint:disable-next-line:no-reserved-keywords
 	type: string;
+
 	stage: ConfigurationStage;
+
 	inputs: { [key: string]: any };
 }
 

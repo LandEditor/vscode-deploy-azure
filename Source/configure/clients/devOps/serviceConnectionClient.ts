@@ -6,7 +6,9 @@ import { AzureDevOpsClient } from "./azureDevOpsClient";
 
 export class ServiceConnectionClient {
 	private azureDevOpsClient: AzureDevOpsClient;
+
 	private organizationName: string;
+
 	private projectName: string;
 
 	constructor(
@@ -15,7 +17,9 @@ export class ServiceConnectionClient {
 		azureDevOpsClient: AzureDevOpsClient,
 	) {
 		this.azureDevOpsClient = azureDevOpsClient;
+
 		this.organizationName = organizationName;
+
 		this.projectName = projectName;
 	}
 

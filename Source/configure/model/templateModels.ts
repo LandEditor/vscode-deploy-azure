@@ -13,19 +13,29 @@ export enum TemplateType {
 
 export interface PipelineTemplate {
 	label: string;
+
 	templateWeight: number;
+
 	templateType: TemplateType;
+
 	targetType: TargetResourceType;
+
 	targetKind: TargetKind;
+
 	language: string;
 }
 
 export interface TemplateInfo {
 	templateId: string;
+
 	workingDirectory: string;
+
 	templateWeight: number;
+
 	templateDescription: string;
+
 	templateLabel: string;
+
 	attributes: TemplateAttributes;
 }
 
@@ -37,8 +47,11 @@ export interface RemotePipelineTemplate
 
 export interface LocalPipelineTemplate extends PipelineTemplate {
 	path: string;
+
 	enabled: boolean;
+
 	parameters?: TemplateParameter[];
+
 	assets?: TemplateAsset[];
 	// this should be removed as we will have endpoints/secrets as assets and not a first class property
 	azureConnectionType?: AzureConnectionType;
@@ -46,18 +59,23 @@ export interface LocalPipelineTemplate extends PipelineTemplate {
 
 export interface TemplateAttributes {
 	language: string;
+
 	buildTarget: string;
+
 	deployTarget: string;
 }
 
 export interface TemplateParameter {
 	name: string;
+
 	displayName: string;
 	// tslint:disable-next-line:no-reserved-keywords
 	type: TemplateParameterType;
+
 	dataSourceId?: string;
 
 	defaultValue?: any;
+
 	options?: { key: string; value: any }[];
 }
 

@@ -16,7 +16,9 @@ export class WhiteListedError extends Error {
 			for (var attribute in errorClone) {
 				this[attribute] = errorClone[attribute];
 			}
+
 			this.message = message || this.message;
+
 			this.stack = error.stack || "";
 		}
 	}

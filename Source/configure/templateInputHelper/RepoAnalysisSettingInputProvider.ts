@@ -10,11 +10,14 @@ const Layer: string = "RepoAnalysisSettingInputProvider";
 
 export class RepoAnalysisSettingInputProvider {
 	private readonly repoAnalysisSettingKey: string = "repoAnalysisSettingKey";
+
 	private repoAnalysisSettings: ApplicationSettings[];
+
 	private selectedRepoAnalysisSettingIndex: number;
 
 	constructor(repoAnalysisSettings: ApplicationSettings[]) {
 		this.repoAnalysisSettings = repoAnalysisSettings || [];
+
 		this.selectedRepoAnalysisSettingIndex =
 			repoAnalysisSettings.length > 1 ? -1 : 0;
 	}
@@ -65,17 +68,21 @@ export class RepoAnalysisSettingInputProvider {
 							)
 						).data;
 					}
+
 					value = selectedValue;
 				}
+
 				inputControl.setValue(value);
 			}
 		} else {
 			const settingIndexMap: Map<string, number[]> = new Map();
+
 			this.repoAnalysisSettings.forEach(
 				(analysisSetting, index: number) => {
 					if (!analysisSetting.settings[repoAnalysisSettingKey]) {
 						return;
 					}
+
 					let keyValue =
 						analysisSetting.settings[repoAnalysisSettingKey];
 
@@ -83,6 +90,7 @@ export class RepoAnalysisSettingInputProvider {
 						if (keyValue.length === 0) {
 							return;
 						}
+
 						keyValue = keyValue.toString();
 					}
 
@@ -113,6 +121,7 @@ export class RepoAnalysisSettingInputProvider {
 					selectedValue = possibleValues[0];
 					// selectedValue = await new ControlProvider().showQuickPick(repoAnalysisSettingKey, possibleValues, { placeHolder: inputControl.getInputDescriptor().name });
 				}
+
 				if (settingIndexMap.get(selectedValue.data).length === 1) {
 					this.selectedRepoAnalysisSettingIndex = settingIndexMap.get(
 						selectedValue.data,
@@ -147,6 +156,7 @@ export class RepoAnalysisSettingInputProvider {
 							);
 					}
 				}
+
 				inputControl.setValue(selectedValue.data);
 			}
 		}
@@ -159,6 +169,7 @@ export class RepoAnalysisSettingInputProvider {
 		const error = new Error(
 			`RepostioryAnalysisSetting doesn't contain ${repoAnalysisSettingKey} for input ${inputControl.getInputControlId()}`,
 		);
+
 		telemetryHelper.logError(
 			Layer,
 			TracePoints.SetInputControlValueFromRepoAnalysisResult,
@@ -177,6 +188,7 @@ export class RepoAnalysisSettingInputProvider {
 				},
 			);
 		}
+
 		return inputControl.setValue(value);
 	}
 }

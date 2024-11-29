@@ -9,18 +9,27 @@ import { RestClient } from "../restClient";
 
 export class TemplateServiceClient implements ITemplateServiceClient {
 	private restClient: RestClient;
+
 	private templateServiceUri: string;
+
 	private headers;
+
 	private readonly apiVersion = "6.0-preview.1";
+
 	private readonly extendedPipelineTemplateResource =
 		"ExtendedPipelineTemplates";
+
 	private readonly templatesInfoResource = "TemplatesInfo";
+
 	private readonly templateAssetFilesResource = "TemplateAssetFiles";
+
 	private readonly hideKey = "vside";
 
 	constructor(url: string, creds?: ServiceClientCredentials, headers?) {
 		this.restClient = new RestClient(creds);
+
 		this.templateServiceUri = url;
+
 		this.headers = headers;
 	}
 

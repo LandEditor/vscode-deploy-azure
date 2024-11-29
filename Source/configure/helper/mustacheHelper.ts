@@ -29,6 +29,7 @@ export class MustacheHelper {
 							return parts[3];
 						}
 					}
+
 					if (parts.length >= 5) {
 						return parts[4];
 					} else {
@@ -173,6 +174,7 @@ export class MustacheHelper {
 							return parts[3];
 						}
 					}
+
 					if (parts.length >= 5) {
 						return parts[4];
 					} else {
@@ -194,6 +196,7 @@ export class MustacheHelper {
 					if (parts.length < 1) {
 						return "";
 					}
+
 					return "{{ " + parts[0] + " }}";
 				};
 			},
@@ -219,6 +222,7 @@ export class MustacheHelper {
 					if (order === "dsc") {
 						sorter = -1;
 					}
+
 					arr = arr.sort((a, b) => {
 						if (a > b) {
 							return 1 * sorter;
@@ -244,6 +248,7 @@ export class MustacheHelper {
 					if (parts.length != 3) {
 						return "";
 					}
+
 					return parts[0].replace(parts[1], parts[2]);
 				};
 			},
@@ -262,12 +267,14 @@ export class MustacheHelper {
 					if (parts.length != 4) {
 						return "";
 					}
+
 					var givenVersion = parts[0].trim();
 
 					var semverCondition = parts[1].trim();
 
 					if (givenVersion.length == 0 || semverCondition.length == 0)
 						return parts[3];
+
 					givenVersion = Semver.minVersion(givenVersion);
 
 					if (Semver.satisfies(givenVersion, semverCondition))
@@ -312,6 +319,7 @@ export class MustacheHelper {
 				}
 			});
 		}
+
 		return result;
 	}
 
@@ -331,6 +339,7 @@ export class MustacheHelper {
 			if (part === "''") {
 				part = "";
 			}
+
 			parts.push(part);
 		}
 

@@ -116,6 +116,7 @@ export class AssetHandler {
 							inputs.pipelineConfiguration,
 							TargetResourceType.WebApp,
 						);
+
 					inputs.pipelineConfiguration.assets[asset.id] =
 						await vscode.window.withProgress(
 							{
@@ -169,6 +170,7 @@ export class AssetHandler {
 							inputs.pipelineConfiguration,
 							TargetResourceType.AKS,
 						);
+
 					inputs.pipelineConfiguration.assets[asset.id] =
 						await vscode.window.withProgress(
 							{
@@ -187,6 +189,7 @@ export class AssetHandler {
 									let base64EncodedKubeConfig: {
 										kubeconfigs: Array<{
 											name: string;
+
 											value: string;
 										}>;
 									} = await armClient.getAksKubeConfig(
@@ -229,6 +232,7 @@ export class AssetHandler {
 							inputs.pipelineConfiguration,
 							TargetResourceType.ACR,
 						);
+
 					inputs.pipelineConfiguration.assets[asset.id] =
 						await vscode.window.withProgress(
 							{
@@ -246,8 +250,10 @@ export class AssetHandler {
 
 									let registryCreds: {
 										username: string;
+
 										passwords: Array<{
 											name: string;
+
 											value: string;
 										}>;
 									} = await armClient.getAcrCredentials(
@@ -286,6 +292,7 @@ export class AssetHandler {
 							inputs.pipelineConfiguration,
 							TargetResourceType.ACR,
 						);
+
 					inputs.pipelineConfiguration.assets[asset.id] =
 						await vscode.window.withProgress(
 							{
@@ -303,8 +310,10 @@ export class AssetHandler {
 
 									let registryCreds: {
 										username: string;
+
 										passwords: Array<{
 											name: string;
+
 											value: string;
 										}>;
 									} = await armClient.getAcrCredentials(
@@ -381,6 +390,7 @@ export class AssetHandler {
 	 */
 	public static getSanitizedUniqueAssetName(assetName: string): string {
 		assetName = assetName + "_" + UniqueResourceNameSuffix;
+
 		assetName = assetName.replace(/\W/g, "");
 
 		return assetName;

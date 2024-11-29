@@ -7,6 +7,7 @@ export class StaticValidator {
 		if (!value) {
 			return Messages.valueRequired;
 		}
+
 		return "";
 	}
 
@@ -20,6 +21,7 @@ export class StaticValidator {
 		} else if (maxLength && maxLength > 0 && value.length > maxLength) {
 			return utils.format(Messages.maxLengthMessage, maxLength);
 		}
+
 		return "";
 	}
 
@@ -39,6 +41,7 @@ export class StaticValidator {
 		} else {
 			return utils.format(Messages.valueShouldBeNumber, value.toString());
 		}
+
 		return "";
 	}
 
@@ -55,6 +58,7 @@ export class StaticValidator {
 				pattern,
 			);
 		}
+
 		return "";
 	}
 }

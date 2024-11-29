@@ -14,10 +14,12 @@ export class PortalExtensionRepositoryAnalysisClient
 	implements IRepositoryAnalysisClient
 {
 	private restClient: RestClient;
+
 	private url: string;
 
 	constructor(url: string, credentials: ServiceClientCredentials) {
 		this.restClient = new RestClient(credentials);
+
 		this.url = url;
 	}
 

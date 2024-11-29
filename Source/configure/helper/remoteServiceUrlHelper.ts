@@ -10,20 +10,26 @@ export enum ServiceFramework {
 
 export interface IServiceUrlDefinition {
 	serviceFramework: ServiceFramework;
+
 	serviceUrl: string;
 }
 
 export class RemoteServiceUrlHelper {
 	public static repoAnalysisRedirectUrl: string =
 		"https://go.microsoft.com/fwlink/?linkid=2127646";
+
 	public static templateServiceRedirectUrl: string =
 		"https://go.microsoft.com/fwlink/?linkid=2133849";
+
 	public static provisioningServiceRedirectUrl: string =
 		"https://go.microsoft.com/fwlink/?linkid=2142042";
+
 	public static repoAnalysisStagingRedirectUrl: string =
 		"https://go.microsoft.com/fwlink/?linkid=2156682";
+
 	public static templateServiceStagingRedirectUrl: string =
 		"https://go.microsoft.com/fwlink/?linkid=2156978";
+
 	public static provisioningServiceStagingRedirectUrl: string =
 		"https://go.microsoft.com/fwlink/?linkid=2156977";
 
@@ -109,6 +115,7 @@ export class RemoteServiceUrlHelper {
 			} else {
 				throw Error("Invalid response from url " + redirectUrl);
 			}
+
 			if (!result.serviceUrl.includes("portalext.visualstudio.com")) {
 				result.serviceFramework = ServiceFramework.Moda;
 			}
@@ -119,6 +126,7 @@ export class RemoteServiceUrlHelper {
 				error,
 			);
 		}
+
 		return result;
 	}
 }

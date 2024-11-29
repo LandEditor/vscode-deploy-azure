@@ -21,10 +21,12 @@ import { RestClient } from "../restClient";
 
 export class AzureDevOpsClient {
 	private restClient: RestClient;
+
 	private listOrgPromise: Promise<Organization[]>;
 
 	constructor(credentials: ServiceClientCredentials) {
 		this.restClient = new RestClient(credentials);
+
 		this.listOrgPromise = this.listOrganizations();
 	}
 
@@ -127,6 +129,7 @@ export class AzureDevOpsClient {
 				.then((organizations) => {
 					let organizationList: Array<Organization> =
 						organizations.value;
+
 					organizationList = organizationList.sort((org1, org2) =>
 						stringCompareFunction(
 							org1.accountName,
@@ -165,10 +168,12 @@ export class AzureDevOpsClient {
 			projects = response.value.map((project) => {
 				return { id: project.id, name: project.name };
 			});
+
 			projects = projects.sort((proj1, proj2) =>
 				stringCompareFunction(proj1.name, proj2.name),
 			);
 		}
+
 		return projects;
 	}
 
@@ -278,12 +283,14 @@ export class AzureDevOpsClient {
 							),
 						);
 					}
+
 					deferred.resolve("");
 				})
 				.catch(() => {
 					deferred.resolve("");
 				});
 		}
+
 		return deferred.promise;
 	}
 
@@ -402,9 +409,11 @@ export class AzureDevOpsClient {
 				);
 			} else {
 				retryCount++;
+
 				await sleepForMilliSeconds(2000);
 			}
 		}
+
 		throw new Error(
 			util.format(
 				Messages.failedToCreateAzureDevOpsProject,

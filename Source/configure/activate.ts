@@ -51,6 +51,7 @@ export async function activateConfigurePipeline(): Promise<AzureExtensionApiProv
 				actionContext,
 				"configure-cicd-pipeline",
 			);
+
 			await configurePipeline(node);
 		},
 	);
@@ -60,6 +61,7 @@ export async function activateConfigurePipeline(): Promise<AzureExtensionApiProv
 		async (actionContext: IActionContext, node: AzureTreeItem) => {
 			// The code you place here will be executed every time your command is executed
 			telemetryHelper.initialize(actionContext, "browse-cicd-pipeline");
+
 			await browsePipeline(node);
 		},
 	);

@@ -15,8 +15,10 @@ export async function webAppRuntimeNodeVersionConverter(
 	} else {
 		nodeVersion = "lts";
 	}
+
 	if (nodeVersion.toLowerCase() === "lts") {
 		let versions: string[];
+
 		await vscode.window.withProgress(
 			{
 				location: vscode.ProgressLocation.Notification,
@@ -29,6 +31,7 @@ export async function webAppRuntimeNodeVersionConverter(
 				const response = await new ArmRestClient(
 					azureSession,
 				).fetchArmData(armUri, "GET");
+
 				versions = JSONPath({
 					path: resultSelector,
 					json: response,
@@ -39,6 +42,7 @@ export async function webAppRuntimeNodeVersionConverter(
 		);
 
 		let maxVersion = 0;
+
 		versions.forEach((version: string) => {
 			const match = version.match(/(\d+)(-lts|\.\d+)/i);
 
@@ -46,9 +50,11 @@ export async function webAppRuntimeNodeVersionConverter(
 				maxVersion = Math.max(maxVersion, +match[1]);
 			}
 		});
+
 		nodeVersion = maxVersion + ".x";
 	} else if (nodeVersion.match(/(\d+)-lts/i)) {
 		nodeVersion = nodeVersion.replace(/-lts/i, ".x");
 	}
+
 	return nodeVersion;
 }

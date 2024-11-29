@@ -7,10 +7,12 @@ export interface Configurer {
 	validatePermissions(): Promise<void>;
 
 	getInputs(inputs: WizardInputs): Promise<void>;
+
 	createPreRequisites(
 		inputs: WizardInputs,
 		azureResourceClient: AzureResourceClient,
 	): Promise<void>;
+
 	createAsset(
 		name: string,
 		// tslint:disable-next-line:no-reserved-keywords
@@ -29,15 +31,19 @@ export interface Configurer {
 		localGitRepoHelper: LocalGitRepoHelper,
 		fileName: string,
 	): Promise<string>;
+
 	checkInPipelineFilesToRepository(
 		filesToCommit: string[],
 		inputs: WizardInputs,
 		localGitRepoHelper: LocalGitRepoHelper,
 	): Promise<string>;
+
 	createAndQueuePipeline(inputs: WizardInputs): Promise<string>;
+
 	executePostPipelineCreationSteps(
 		inputs: WizardInputs,
 		azureResourceClient: AzureResourceClient,
 	): Promise<void>;
+
 	browseQueuedPipeline(): Promise<void>;
 }

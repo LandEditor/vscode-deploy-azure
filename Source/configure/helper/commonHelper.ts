@@ -38,6 +38,7 @@ export async function generateGitHubRepository(
 	}
 	//Case: Local repository name is not available, therefore organization name has been appended
 	repoName = repoName + "_" + orgName;
+
 	repoDetails = (await githubClient.createGithubRepo(
 		orgName,
 		repoName,
@@ -84,6 +85,7 @@ export function generateDevOpsProjectName(repositoryName?: string): string {
 	let repoParts = repositoryName.split("/");
 
 	let suffix = repoParts[repoParts.length - 1];
+
 	suffix = suffix.trim();
 	// project name cannot end with . or _
 	suffix = suffix.replace(/\.[\.]*$/, "").replace(/^_[_]*$/, "");
@@ -109,13 +111,16 @@ export function generateRandomPassword(length: number = 20): string {
 
 	for (var x = 0; x < length; x++) {
 		var i = Math.floor(Math.random() * charTypeSize[x % 4]);
+
 		password += characters.charAt(i + charTypeStartIndex[x % 4]);
 	}
+
 	return password;
 }
 
 export function stringCompareFunction(a: string, b: string): number {
 	a = a && a.toLowerCase();
+
 	b = b && b.toLowerCase();
 
 	if (a < b) {
@@ -123,6 +128,7 @@ export function stringCompareFunction(a: string, b: string): number {
 	} else if (a > b) {
 		return 1;
 	}
+
 	return 0;
 }
 
@@ -141,7 +147,9 @@ export async function executeFunctionWithRetry(
 			return result;
 		} catch (error) {
 			internalError = error;
+
 			logger.log(JSON.stringify(error));
+
 			await Q.delay((resolve) => {
 				resolve();
 			}, retryIntervalTimeInSec * 1000);

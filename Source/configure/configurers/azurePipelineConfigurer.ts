@@ -47,16 +47,22 @@ const Layer = "AzurePipelineConfigurer";
 
 export class AzurePipelineConfigurer implements Configurer {
 	private azureDevOpsHelper: AzureDevOpsHelper;
+
 	private azureDevOpsClient: AzureDevOpsClient;
+
 	private queuedPipeline: Build;
+
 	private controlProvider: ControlProvider;
 
 	constructor(azureSession: AzureSession) {
 		this.azureDevOpsClient = new AzureDevOpsClient(
 			azureSession.credentials,
 		);
+
 		this.azureDevOpsHelper = new AzureDevOpsHelper(this.azureDevOpsClient);
+
 		this.controlProvider = new ControlProvider();
+
 		this.azureDevOpsClient.listOrganizations(true);
 	}
 
@@ -82,6 +88,7 @@ export class AzurePipelineConfigurer implements Configurer {
 							{ placeHolder: Messages.selectOrganization },
 							TelemetryKeys.OrganizationListCount,
 						);
+
 					inputs.organizationName = selectedOrganization.label;
 
 					let selectedProject =
@@ -97,6 +104,7 @@ export class AzurePipelineConfigurer implements Configurer {
 							{ placeHolder: Messages.selectProject },
 							TelemetryKeys.ProjectListCount,
 						);
+
 					inputs.project = selectedProject.data;
 				} else {
 					inputs.isNewOrganization = true;
@@ -132,6 +140,7 @@ export class AzurePipelineConfigurer implements Configurer {
 					} else {
 						inputs.organizationName = organizationName;
 					}
+
 					inputs.project = {
 						id: "",
 						name: generateDevOpsProjectName(
@@ -144,7 +153,9 @@ export class AzurePipelineConfigurer implements Configurer {
 					AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(
 						inputs.sourceRepository.remoteUrl,
 					);
+
 				inputs.organizationName = repoDetails.organizationName;
+
 				await this.azureDevOpsClient
 					.getRepository(
 						inputs.organizationName,
@@ -153,10 +164,12 @@ export class AzurePipelineConfigurer implements Configurer {
 					)
 					.then((repository) => {
 						inputs.sourceRepository.repositoryId = repository.id;
+
 						inputs.project = {
 							id: repository.project.id,
 							name: repository.project.name,
 						};
+
 						telemetryHelper.setTelemetry(
 							TelemetryKeys.RepoId,
 							inputs.sourceRepository.repositoryId,
@@ -180,6 +193,7 @@ export class AzurePipelineConfigurer implements Configurer {
 					error,
 				);
 			}
+
 			telemetryHelper.logError(
 				Layer,
 				TracePoints.GetAzureDevOpsDetailsFailed,
@@ -210,6 +224,7 @@ export class AzurePipelineConfigurer implements Configurer {
 						await this.azureDevOpsClient.createOrganization(
 							inputs.organizationName,
 						);
+
 						this.azureDevOpsClient.listOrganizations(true);
 
 						// Create DevOps project
@@ -217,6 +232,7 @@ export class AzurePipelineConfigurer implements Configurer {
 							inputs.organizationName,
 							inputs.project.name,
 						);
+
 						inputs.project.id =
 							await this.azureDevOpsClient.getProjectIdFromName(
 								inputs.organizationName,
@@ -234,6 +250,7 @@ export class AzurePipelineConfigurer implements Configurer {
 				},
 			);
 		}
+
 		let serviceConnectionHelper = new ServiceConnectionHelper(
 			inputs.organizationName,
 			inputs.project.name,
@@ -253,6 +270,7 @@ export class AzurePipelineConfigurer implements Configurer {
 				async () => {
 					try {
 						let serviceConnectionName = `${inputs.sourceRepository.repositoryName}-${UniqueResourceNameSuffix}`;
+
 						inputs.sourceRepository.serviceConnectionId =
 							await serviceConnectionHelper.createGitHubServiceConnection(
 								serviceConnectionName,
@@ -373,6 +391,7 @@ export class AzurePipelineConfigurer implements Configurer {
 				let serverUrl = targetAks.properties
 					? targetAks.properties.fqdn
 					: "";
+
 				serverUrl =
 					!!serverUrl && !serverUrl.startsWith("https://")
 						? "https://" + serverUrl
@@ -394,6 +413,7 @@ export class AzurePipelineConfigurer implements Configurer {
 				let registryUrl: string = targetAcr.properties
 					? targetAcr.properties.loginServer
 					: "";
+
 				registryUrl =
 					!!registryUrl && !registryUrl.startsWith("https://")
 						? "https://" + registryUrl
@@ -455,6 +475,7 @@ export class AzurePipelineConfigurer implements Configurer {
 
 		if (!inputs.sourceRepository.remoteUrl) {
 			commitMessage = Messages.modifyAndCommitFileWithGitInitialization;
+
 			telemetryHelper.setTelemetry(
 				TelemetryKeys.NewDevOpsRepository,
 				"true",
@@ -466,6 +487,7 @@ export class AzurePipelineConfigurer implements Configurer {
 				inputs.sourceRepository.branch,
 				inputs.sourceRepository.remoteName,
 			);
+
 			telemetryHelper.setTelemetry(
 				TelemetryKeys.NewDevOpsRepository,
 				"false",
@@ -499,6 +521,7 @@ export class AzurePipelineConfigurer implements Configurer {
 										)
 										.trim()
 										.replace(/[^a-zA-Z0-9-]/g, "");
+
 									repositoryName = !!repositoryName
 										? repositoryName +
 											UniqueResourceNameSuffix
@@ -510,10 +533,13 @@ export class AzurePipelineConfigurer implements Configurer {
 											inputs.project.id,
 											repositoryName,
 										);
+
 									inputs.sourceRepository.repositoryName =
 										repository.name;
+
 									inputs.sourceRepository.repositoryId =
 										repository.id;
+
 									inputs.sourceRepository.remoteUrl =
 										repository.remoteUrl;
 								}
@@ -527,8 +553,10 @@ export class AzurePipelineConfigurer implements Configurer {
 
 									let branchDetails =
 										await localGitRepoHelper.getGitBranchDetails();
+
 									inputs.sourceRepository.branch =
 										branchDetails.branch;
+
 									initializeGitRepository = false;
 								}
 
@@ -544,6 +572,7 @@ export class AzurePipelineConfigurer implements Configurer {
 									TracePoints.CheckInPipelineFailure,
 									error,
 								);
+
 								vscode.window.showErrorMessage(
 									utils.format(
 										Messages.commitFailedErrorMessage,
@@ -636,28 +665,36 @@ export class AzurePipelineConfigurer implements Configurer {
 						let metadata = await (
 							azureResourceClient as AppServiceClient
 						).getAppServiceMetadata(targetResource.id);
+
 						metadata["properties"] = metadata["properties"]
 							? metadata["properties"]
 							: {};
+
 						metadata["properties"]["VSTSRM_ProjectId"] =
 							`${inputs.project.id}`;
+
 						metadata["properties"]["VSTSRM_AccountId"] =
 							await this.azureDevOpsClient.getOrganizationIdFromName(
 								inputs.organizationName,
 							);
+
 						metadata["properties"]["VSTSRM_BuildDefinitionId"] =
 							`${this.queuedPipeline.definition.id}`;
+
 						metadata["properties"][
 							"VSTSRM_BuildDefinitionWebAccessUrl"
 						] = `${buildDefinitionUrl}`;
+
 						metadata["properties"]["VSTSRM_ConfiguredCDEndPoint"] =
 							"";
+
 						metadata["properties"]["VSTSRM_ReleaseDefinitionId"] =
 							"";
 
 						(
 							azureResourceClient as AppServiceClient
 						).updateAppServiceMetadata(targetResource.id, metadata);
+
 						resolve();
 					},
 				);
@@ -714,6 +751,7 @@ export class AzurePipelineConfigurer implements Configurer {
 						TelemetryKeys.BrowsePipelineClicked,
 						"true",
 					);
+
 					vscode.env.openExternal(
 						vscode.Uri.parse(this.queuedPipeline._links.web.href),
 					);

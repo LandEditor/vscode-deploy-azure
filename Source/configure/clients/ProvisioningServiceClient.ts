@@ -13,10 +13,15 @@ import { RestClient } from "./restClient";
 
 export class ProvisioningServiceClient implements IProvisioningServiceClient {
 	private restClient: RestClient;
+
 	private serviceDefinition: IServiceUrlDefinition;
+
 	private defaultHeaders: { [propertyName: string]: string };
+
 	private defaultParameters: { [propertyName: string]: string };
+
 	private readonly pipelineProvisioningJob = "PipelineProvisioningJob";
+
 	private readonly PEProvisioningServiceAPIVersion = "6.1-preview.1";
 
 	constructor(
@@ -25,7 +30,9 @@ export class ProvisioningServiceClient implements IProvisioningServiceClient {
 		credentials: ServiceClientCredentials,
 	) {
 		this.restClient = new RestClient(credentials);
+
 		this.serviceDefinition = serviceDefinition;
+
 		this.defaultHeaders = headers;
 
 		if (this.serviceDefinition.serviceFramework === ServiceFramework.Vssf) {

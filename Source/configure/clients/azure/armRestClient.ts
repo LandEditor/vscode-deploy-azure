@@ -3,11 +3,13 @@ import { RestClient } from "../restClient";
 
 export class ArmRestClient {
 	private resourceManagerEndpointUrl: string;
+
 	private restClient: RestClient;
 
 	public constructor(azureSession: AzureSession) {
 		this.resourceManagerEndpointUrl =
 			azureSession.environment.resourceManagerEndpointUrl;
+
 		this.restClient = new RestClient(azureSession.credentials);
 	}
 

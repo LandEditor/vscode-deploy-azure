@@ -31,7 +31,9 @@ export class ServiceConnectionHelper {
 			);
 
 		let endpointId: string = response.id;
+
 		await this.waitForGitHubEndpointToBeReady(endpointId);
+
 		await this.serviceConnectionClient
 			.authorizeEndpointForAllPipelines(endpointId)
 			.then((response) => {
@@ -60,7 +62,9 @@ export class ServiceConnectionHelper {
 			);
 
 		let endpointId = response.id;
+
 		await this.waitForEndpointToBeReady(endpointId);
+
 		await this.serviceConnectionClient
 			.authorizeEndpointForAllPipelines(endpointId)
 			.then((response) => {
@@ -87,7 +91,9 @@ export class ServiceConnectionHelper {
 			);
 
 		let endpointId = response.id;
+
 		await this.waitForEndpointToBeReady(endpointId);
+
 		await this.serviceConnectionClient
 			.authorizeEndpointForAllPipelines(endpointId)
 			.then((response) => {
@@ -112,6 +118,7 @@ export class ServiceConnectionHelper {
 			);
 
 		let endpointId = response.id;
+
 		await this.serviceConnectionClient
 			.authorizeEndpointForAllPipelines(endpointId)
 			.then((response) => {
@@ -138,6 +145,7 @@ export class ServiceConnectionHelper {
 			);
 
 		let endpointId = response.id;
+
 		await this.serviceConnectionClient
 			.authorizeEndpointForAllPipelines(endpointId)
 			.then((response) => {
@@ -178,6 +186,7 @@ export class ServiceConnectionHelper {
 			}
 
 			await this.sleepForMilliSeconds(2000);
+
 			retryCount++;
 		}
 	}
@@ -209,6 +218,7 @@ export class ServiceConnectionHelper {
 			}
 
 			await this.sleepForMilliSeconds(2000);
+
 			retryCount++;
 		}
 	}

@@ -71,12 +71,14 @@ export class GraphHelper {
 							errorMessage = error["odata.error"]["message"];
 						}
 					}
+
 					if (!errorMessage) {
 						try {
 							errorMessage = JSON.stringify(error);
 						} catch (err) {}
 					}
 				}
+
 				throw new Error(errorMessage);
 			});
 	}
@@ -107,6 +109,7 @@ export class GraphHelper {
 			projectName.length > spnLengthAllowed / 2
 		) {
 			accountName = accountName.substr(0, spnLengthAllowed / 2);
+
 			projectName = projectName.substr(
 				0,
 				spnLengthAllowed - accountName.length,
@@ -139,7 +142,9 @@ export class GraphHelper {
 	}
 
 	private static contributorRoleId = "b24988ac-6180-42a0-ab88-20f7382dd24c";
+
 	private static retryTimeIntervalInSec = 2;
+
 	private static retryCount = 20;
 
 	private static async getGraphToken(
@@ -163,6 +168,7 @@ export class GraphHelper {
 			const credentials: any = session.credentials;
 
 			const environment = session.environment;
+
 			credentials.context.acquireToken(
 				environment.activeDirectoryResourceId,
 				credentials.username,
@@ -197,6 +203,7 @@ export class GraphHelper {
 				true,
 				tokenCache,
 			);
+
 			context.acquireTokenWithRefreshToken(
 				refreshToken,
 				clientId,

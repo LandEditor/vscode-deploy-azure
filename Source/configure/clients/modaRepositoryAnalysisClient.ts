@@ -9,16 +9,21 @@ import { IRepositoryAnalysisClient } from "./repositoryAnalyisClient";
 
 export class ModaRepositoryAnalysisClient implements IRepositoryAnalysisClient {
 	private restClient: RestClient;
+
 	private githubPat: string;
+
 	private pathUrl: string;
 
 	constructor(url: string, githubPat: string) {
 		const u = vscodeUri.parse(url);
+
 		this.restClient = new RestClient(
 			"deploy-to-azure",
 			u.scheme + "://" + u.authority,
 		);
+
 		this.pathUrl = u.path;
+
 		this.githubPat = githubPat;
 	}
 

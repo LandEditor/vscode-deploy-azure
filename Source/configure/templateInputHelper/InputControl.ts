@@ -27,15 +27,25 @@ const Layer: string = "InputControl";
 
 export class InputControl {
 	public dataSource: DataSourceExpression;
+
 	public dataSourceInputControls: Array<InputControl>;
+
 	public dataSourceInputs: Map<string, any>;
+
 	public inputDescriptor: ExtendedInputDescriptor;
+
 	private value: any;
+
 	private controlType: ControlType;
+
 	private visible: boolean;
+
 	private validationDataSourceToInputsMap: Map<DataSource, InputControl[]>;
+
 	private azureSession: AzureSession;
+
 	private _valuePendingValuation: any;
+
 	private controlProvider: ControlProvider;
 
 	constructor(
@@ -45,12 +55,19 @@ export class InputControl {
 		azureSession: AzureSession,
 	) {
 		this.inputDescriptor = inputDescriptor;
+
 		this.value = value;
+
 		this.visible = true;
+
 		this.controlType = controlType;
+
 		this.azureSession = azureSession;
+
 		this.dataSourceInputControls = [];
+
 		this.dataSourceInputs = new Map<string, any>();
+
 		this.controlProvider = new ControlProvider();
 	}
 
@@ -106,6 +123,7 @@ export class InputControl {
 		if (!this.isVisible()) {
 			return;
 		}
+
 		if (!!this.dataSource) {
 			var dependentInputs = this._getDataSourceInputs();
 
@@ -124,6 +142,7 @@ export class InputControl {
 
 				if (errorMessage) {
 					vscode.window.showErrorMessage(errorMessage);
+
 					this.value = await this.controlProvider.showInputBox(
 						this.getInputControlId(),
 						{
@@ -170,8 +189,10 @@ export class InputControl {
 					if (!errorMessage) {
 						break;
 					}
+
 					vscode.window.showErrorMessage(errorMessage);
 				}
+
 				this.value = selectedItem.data;
 			}
 		} else {
@@ -192,8 +213,10 @@ export class InputControl {
 					this.inputDescriptor.inputMode === InputMode.RadioButtons
 				) {
 					listItems.push({ label: "Yes", data: "true" });
+
 					listItems.push({ label: "No", data: "false" });
 				}
+
 				this.value = (
 					await this.controlProvider.showQuickPick(
 						this.getInputControlId(),
@@ -244,6 +267,7 @@ export class InputControl {
 				return MustacheHelper.renderObject(value, { inputs: inputs });
 			}
 		}
+
 		return value;
 	}
 
@@ -265,6 +289,7 @@ export class InputControl {
 		}
 
 		let validationPromises: Promise<string>[] = [];
+
 		this.inputDescriptor.dynamicValidations.forEach(
 			(validation: InputDynamicValidation) => {
 				validationPromises.push(
@@ -295,6 +320,7 @@ export class InputControl {
 			inputs[dataSourceInput.getInputControlId()] =
 				dataSourceInput.getValue();
 		}
+
 		return inputs;
 	}
 
@@ -308,6 +334,7 @@ export class InputControl {
 				validationResult = validationResult.concat(result);
 			}
 		}
+
 		if (this.inputDescriptor.staticValidation) {
 			if (
 				!!this.inputDescriptor.staticValidation.minLength ||
@@ -323,6 +350,7 @@ export class InputControl {
 					validationResult = validationResult.concat(result);
 				}
 			}
+
 			if (!!this.inputDescriptor.staticValidation.pattern) {
 				var regexPattern =
 					this.inputDescriptor.staticValidation.pattern;
@@ -340,6 +368,7 @@ export class InputControl {
 						: validationResult.concat(result);
 				}
 			}
+
 			if (
 				this.inputDescriptor.type === InputDataType.Int &&
 				(!!this.inputDescriptor.staticValidation.minValue ||
@@ -356,6 +385,7 @@ export class InputControl {
 				}
 			}
 		}
+
 		return validationResult;
 	}
 
@@ -364,6 +394,7 @@ export class InputControl {
 		value: string,
 	): Promise<string> {
 		var requiredDataSource: DataSource = null;
+
 		this.validationDataSourceToInputsMap.forEach(
 			(inputControlArray: InputControl[], dataSource: DataSource) => {
 				if (dataSource.id === validation.dataSourceId) {
@@ -375,6 +406,7 @@ export class InputControl {
 		var requiredInputsValueMap: StringMap<any> = {};
 
 		var allRequiredInputValuesAvailable: boolean = true;
+
 		this.validationDataSourceToInputsMap
 			.get(requiredDataSource)
 			.forEach((descriptor) => {
@@ -431,6 +463,7 @@ export class InputControl {
 							error,
 						);
 					}
+
 					return null;
 				});
 		} else {

@@ -12,11 +12,14 @@ const UserAgent = "deploy-to-azure-vscode";
 
 export class GithubClient {
 	private patToken: string;
+
 	private url: string;
+
 	private listOrgPromise: Promise<GitHubOrganization[]>;
 
 	constructor(patToken: string, remoteUrl: string) {
 		this.patToken = patToken;
+
 		this.url = remoteUrl;
 	}
 
@@ -41,6 +44,7 @@ export class GithubClient {
 		const encryptedEncodedText = SodiumLibHelper.encodeToBase64(
 			encryptedBytesAsString,
 		);
+
 		await this._setGithubSecret(
 			secretName,
 			secretKeyObject.key_id,
@@ -85,6 +89,7 @@ export class GithubClient {
 				if (error.response.statusCode === 422) {
 					return null;
 				}
+
 				throw new Error(JSON.parse(error.response.body).message);
 			});
 	}
@@ -128,6 +133,7 @@ export class GithubClient {
 					);
 			});
 		}
+
 		return this.listOrgPromise;
 	}
 
@@ -174,6 +180,7 @@ export class GithubClient {
 				key_id: key_id,
 			},
 		};
+
 		await this._sendRequest(request);
 	}
 
@@ -199,5 +206,6 @@ export class GithubClient {
 
 export interface IGitHubSecretKey {
 	key_id: string;
+
 	key: string;
 }

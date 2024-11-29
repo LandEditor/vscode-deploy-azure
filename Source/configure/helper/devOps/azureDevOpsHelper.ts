@@ -17,8 +17,11 @@ const Layer: string = "azureDevOpsHelper";
 
 export class AzureDevOpsHelper {
 	private static AzureReposUrl = "dev.azure.com/";
+
 	private static SSHAzureReposUrl = "ssh.dev.azure.com:v3/";
+
 	private static VSOUrl = ".visualstudio.com/";
+
 	private static SSHVsoReposUrl = "vs-ssh.visualstudio.com:v3/";
 
 	private azureDevOpsClient: AzureDevOpsClient;
@@ -53,7 +56,9 @@ export class AzureDevOpsHelper {
 
 	public static getRepositoryDetailsFromRemoteUrl(remoteUrl: string): {
 		organizationName: string;
+
 		projectName: string;
+
 		repositoryName: string;
 	} {
 		if (remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) >= 0) {
@@ -75,6 +80,7 @@ export class AzureDevOpsHelper {
 
 				throw new Error(Messages.failedToDetermineAzureRepoDetails);
 			}
+
 			return {
 				organizationName: parts[0].trim(),
 				projectName: parts[1].trim(),
@@ -112,6 +118,7 @@ export class AzureDevOpsHelper {
 
 				throw new Error(Messages.failedToDetermineAzureRepoDetails);
 			}
+
 			return {
 				organizationName: organizationName,
 				projectName: parts[0].trim(),
@@ -143,6 +150,7 @@ export class AzureDevOpsHelper {
 
 				throw new Error(Messages.failedToDetermineAzureRepoDetails);
 			}
+
 			return {
 				organizationName: parts[0].trim(),
 				projectName: parts[1].trim(),

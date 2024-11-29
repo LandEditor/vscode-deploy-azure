@@ -28,10 +28,12 @@ const Layer: string = "repoAnalysisHelper";
 
 export class RepoAnalysisHelper {
 	private azureSession: AzureSession;
+
 	private githubPatToken?: string;
 
 	constructor(azureSession: AzureSession, githubPatToken?: string) {
 		this.azureSession = azureSession;
+
 		this.githubPatToken = githubPatToken;
 	}
 
@@ -48,21 +50,28 @@ export class RepoAnalysisHelper {
 			const client = this.getClient(serviceDefinition);
 
 			const repositoryDetails: CodeRepository = {} as CodeRepository;
+
 			repositoryDetails.id = sourceRepositoryDetails.repositoryId;
+
 			repositoryDetails.defaultBranch = !!sourceRepositoryDetails.branch
 				? sourceRepositoryDetails.branch
 				: RepoAnalysisConstants.Master;
+
 			repositoryDetails.type = RepositoryProvider.Github;
 
 			let repositoryAnalysisRequestBody = {} as SourceRepository;
+
 			repositoryAnalysisRequestBody.repository = repositoryDetails;
+
 			repositoryAnalysisRequestBody.workingDirectory = workspacePath;
+
 			repositoryAnalysisRequestBody.repository.authorizationInfo = {
 				scheme: "Token",
 				parameters: {
 					accesstoken: this.githubPatToken,
 				},
 			};
+
 			repositoryAnalysisResponse = await client.getRepositoryAnalysis(
 				repositoryAnalysisRequestBody,
 			);
@@ -81,7 +90,9 @@ export class RepoAnalysisHelper {
 		}
 
 		let parameters: RepositoryAnalysis = {} as RepositoryAnalysis;
+
 		parameters.applicationSettingsList = [];
+
 		repositoryAnalysisResponse.applicationSettingsList.forEach(
 			(analysis) => {
 				//Process only for VSCode Supported Languages
@@ -92,6 +103,7 @@ export class RepoAnalysisHelper {
 				) {
 					let applicationSettings: ApplicationSettings =
 						{} as ApplicationSettings;
+
 					applicationSettings.language = analysis.language;
 
 					if (!!analysis.settings) {
@@ -99,11 +111,13 @@ export class RepoAnalysisHelper {
 							if (!applicationSettings.settings) {
 								applicationSettings.settings = {};
 							}
+
 							applicationSettings.settings.workingDirectory =
 								analysis.settings.workingDirectory
 									.split("\\")
 									.join("/");
 						}
+
 						if (!!analysis.buildTargetName) {
 							applicationSettings.buildTargetName =
 								analysis.buildTargetName;
@@ -115,6 +129,7 @@ export class RepoAnalysisHelper {
 									analysis.settings[
 										RepoAnalysisConstants.PackageFilePath
 									];
+
 								applicationSettings.settings.packageFileDirectory =
 									path.dirname(
 										analysis.settings[
@@ -174,6 +189,7 @@ export class RepoAnalysisHelper {
 													.RequirementsFilePath
 											],
 										);
+
 									applicationSettings.settings.pythonRequirementsFileDirectory =
 										path.dirname(
 											analysis.settings[
@@ -185,12 +201,14 @@ export class RepoAnalysisHelper {
 							} else {
 								applicationSettings.settings =
 									analysis.settings;
+
 								applicationSettings.settings.workingDirectory =
 									applicationSettings.settings.workingDirectory
 										.split("\\")
 										.join("/");
 							}
 						}
+
 						if (!!analysis.deployTargetName) {
 							applicationSettings.deployTargetName =
 								analysis.deployTargetName;
@@ -203,6 +221,7 @@ export class RepoAnalysisHelper {
 									analysis.settings[
 										RepoAnalysisConstants.HostFilePath
 									];
+
 								applicationSettings.settings.azureFunctionsHostFileDirectory =
 									path.dirname(
 										analysis.settings[
@@ -212,6 +231,7 @@ export class RepoAnalysisHelper {
 							}
 						}
 					}
+
 					parameters.applicationSettingsList.push(
 						applicationSettings,
 					);
@@ -248,6 +268,7 @@ export class RepoAnalysisHelper {
 				this.githubPatToken,
 			);
 		}
+
 		return client;
 	}
 }

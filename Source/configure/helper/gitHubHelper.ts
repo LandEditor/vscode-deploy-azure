@@ -1,6 +1,8 @@
 export class GitHubProvider {
 	// private gitHubPatToken: string;
+
 	private static GitHubUrl = "https://github.com/";
+
 	private static SSHGitHubUrl = "git@github.com:";
 
 	// constructor(gitHubPat: string) {

@@ -40,6 +40,7 @@ export class RestClient extends ServiceClient {
 							reject(response.body);
 						}
 					}
+
 					resolve(response.body);
 				})
 				.catch((error) => {

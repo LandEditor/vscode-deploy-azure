@@ -82,6 +82,7 @@ export class ControlProvider {
 			TelemetryKeys.CurrentUserInput,
 			informationIdentifier,
 		);
+
 		await window.showErrorMessage(errorMessage);
 	}
 }

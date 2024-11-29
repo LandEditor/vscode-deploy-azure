@@ -46,12 +46,16 @@ const Layer = "LocalGitHubWorkflowConfigurer";
 
 export class LocalGitHubWorkflowConfigurer implements Configurer {
 	protected githubClient: GithubClient;
+
 	private queuedPipelineUrl: string;
+
 	private controlProvider: ControlProvider;
+
 	private localGitRepoHelper: LocalGitRepoHelper;
 
 	constructor(localgitRepoHelper: LocalGitRepoHelper) {
 		this.controlProvider = new ControlProvider();
+
 		this.localGitRepoHelper = localgitRepoHelper;
 	}
 
@@ -60,6 +64,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 			inputs.githubPATToken,
 			inputs.sourceRepository.remoteUrl,
 		);
+
 		inputs.isNewOrganization = false;
 
 		if (!inputs.sourceRepository.remoteUrl) {
@@ -76,6 +81,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 						{ placeHolder: Messages.selectGitHubOrganizationName },
 						TelemetryKeys.OrganizationListCount,
 					);
+
 				inputs.organizationName = selectedOrganization.label;
 
 				const isUserAccount = githubOrganizations.find(
@@ -89,26 +95,34 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 						this.githubClient,
 						isUserAccount,
 					)) as GitHubRepo;
+
 					this.githubClient.setRepoUrl(newGitHubRepo.html_url);
+
 					inputs.sourceRepository.remoteName = newGitHubRepo.name;
+
 					inputs.sourceRepository.remoteUrl =
 						newGitHubRepo.html_url + ".git";
+
 					inputs.sourceRepository.repositoryId =
 						GitHubProvider.getRepositoryIdFromUrl(
 							inputs.sourceRepository.remoteUrl,
 						);
+
 					await this.localGitRepoHelper.initializeGitRepository(
 						inputs.sourceRepository.remoteName,
 						inputs.sourceRepository.remoteUrl,
 					);
+
 					telemetryHelper.setTelemetry(
 						TelemetryKeys.RepoId,
 						inputs.sourceRepository.repositoryId,
 					);
+
 					telemetryHelper.setTelemetry(
 						TelemetryKeys.GitHubRepoCreated,
 						"true",
 					);
+
 					vscode.window.showInformationMessage(
 						utils.format(
 							Messages.newGitHubRepositoryCreated,
@@ -126,6 +140,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 				);
 
 				const error = new Error(Messages.createGitHubOrganization);
+
 				telemetryHelper.logError(
 					Layer,
 					TracePoints.NoGitHubOrganizationExists,
@@ -271,6 +286,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 		if (!pipelineFileName) {
 			pipelineFileName = "workflow.yml";
 		}
+
 		return await this.getPathToFile(
 			localGitRepoHelper,
 			pipelineFileName,
@@ -314,7 +330,9 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 		let dirList = directory.split(path.sep);
 
 		let directoryPath: string = "";
+
 		directoryPath = await localGitRepoHelper.getGitRootDirectory();
+
 		dirList.forEach((dir) => {
 			try {
 				directoryPath = path.join(directoryPath, dir);
@@ -326,10 +344,12 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 				throw error;
 			}
 		});
+
 		fileName = await LocalGitRepoHelper.GetAvailableFileName(
 			fileName,
 			directoryPath,
 		);
+
 		telemetryHelper.setTelemetry(TelemetryKeys.WorkflowFileName, fileName);
 
 		return path.join(directoryPath, fileName);
@@ -385,6 +405,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 									TracePoints.CheckInPipelineFailure,
 									error,
 								);
+
 								vscode.window.showErrorMessage(
 									utils.format(
 										Messages.commitFailedErrorMessage,
@@ -431,6 +452,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 					let metadata = await (
 						azureResourceClient as AppServiceClient
 					).getAppServiceMetadata(inputs.targetResource.resource.id);
+
 					metadata["properties"] = metadata["properties"]
 						? metadata["properties"]
 						: {};
@@ -455,9 +477,12 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 					if (!!doc["name"]) {
 						metadata["properties"]["configName"] = `${doc["name"]}`;
 					}
+
 					metadata["properties"]["configPath"] = `${configPath}`;
+
 					metadata["properties"]["repoUrl"] =
 						`https://github.com/${inputs.sourceRepository.repositoryId}`;
+
 					metadata["properties"]["branch"] =
 						inputs.sourceRepository.branch;
 
@@ -467,6 +492,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 						inputs.targetResource.resource.id,
 						metadata,
 					);
+
 					resolve();
 				});
 
@@ -504,6 +530,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 					authorName,
 					deployerName,
 				);
+
 				Q.all([sourceControlPromise, updateDeploymentLogPromise]).then(
 					() => {
 						telemetryHelper.setTelemetry(
@@ -535,6 +562,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 				let workflowFileName = path.basename(
 					inputs.pipelineConfiguration.filePath,
 				);
+
 				await azureResourceClient.updateCdSetupResourceTag(
 					aksResource,
 					inputs.sourceRepository.repositoryId,
@@ -570,6 +598,7 @@ export class LocalGitHubWorkflowConfigurer implements Configurer {
 						TelemetryKeys.BrowsePipelineClicked,
 						"true",
 					);
+
 					vscode.env.openExternal(
 						vscode.Uri.parse(this.queuedPipelineUrl),
 					);

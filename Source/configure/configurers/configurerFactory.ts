@@ -29,6 +29,7 @@ export class ConfigurerFactory {
 								localGitRepoHelper,
 							);
 				}
+
 				return new AzurePipelineConfigurer(azureSession);
 
 			case RepositoryProvider.AzureRepos:

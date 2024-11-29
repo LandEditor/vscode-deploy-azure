@@ -14,6 +14,7 @@ export class VisibilityHelper {
 				let rules = visibleRule.split(Operator_AND);
 
 				let predicateRules = rules.map(this.getPredicateRule);
+
 				rule = {
 					operator: Operator_AND,
 					predicateRules: predicateRules,
@@ -22,12 +23,14 @@ export class VisibilityHelper {
 				let rules = visibleRule.split(Operator_OR);
 
 				let predicateRules = rules.map(this.getPredicateRule);
+
 				rule = {
 					operator: Operator_OR,
 					predicateRules: predicateRules,
 				};
 			} else {
 				let predicateRule = this.getPredicateRule(visibleRule);
+
 				rule = {
 					operator: null,
 					predicateRules: [predicateRule],
@@ -46,7 +49,9 @@ export class VisibilityHelper {
 
 		for (
 			let i = 0, len = visibilityRule.predicateRules.length;
+
 			i < len;
+
 			i++
 		) {
 			let predicateRule = visibilityRule.predicateRules[i];
@@ -74,6 +79,7 @@ export class VisibilityHelper {
 						predicateRule,
 						dependentInput.getValue(),
 					);
+
 					result = this._evaluate(
 						result,
 						predicateResult,
@@ -86,6 +92,7 @@ export class VisibilityHelper {
 				break;
 			}
 		}
+
 		return result;
 	}
 
@@ -118,6 +125,7 @@ export class VisibilityHelper {
 				};
 			}
 		}
+
 		return rule;
 	}
 
@@ -238,6 +246,7 @@ export class VisibilityHelper {
 			// Single condition, no operator
 			return expr2;
 		}
+
 		return true;
 	}
 }

@@ -29,6 +29,7 @@ export class DataSourceUtility {
 					var endIndex = value.indexOf("}}}");
 
 					var inputId = value.substring(startIndex, endIndex);
+
 					inputIds.push(inputId);
 				});
 			}
@@ -46,6 +47,7 @@ export class DataSourceUtility {
 				return dataSource;
 			}
 		}
+
 		return null;
 	}
 
@@ -87,6 +89,7 @@ export class DataSourceUtility {
 				dataSource.resultSelector,
 				view,
 			);
+
 			response = JSONPath({
 				json: response,
 				path: resultSelector,
@@ -108,12 +111,14 @@ export class DataSourceUtility {
 					if (typeof item === "string" || item instanceof String) {
 						item = { "result": item };
 					}
+
 					var resultObj = JSON.parse(
 						MustacheHelper.render(dataSource.resultTemplate, {
 							...view,
 							...item,
 						}),
 					);
+
 					quickPickItems.push({
 						label: resultObj.DisplayValue,
 						data: resultObj.Value,

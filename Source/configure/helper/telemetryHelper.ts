@@ -12,15 +12,22 @@ const uuid = require("uuid/v4");
 
 class TelemetryHelper {
 	private actionContext: IActionContext;
+
 	private telemetryReporter: ITelemetryReporter;
+
 	private journeyId: string;
+
 	private command: string;
 
 	public initialize(actionContext: IActionContext, command: string): void {
 		this.actionContext = actionContext;
+
 		this.telemetryReporter = extensionVariables.reporter;
+
 		this.journeyId = uuid();
+
 		this.command = command;
+
 		this.setTelemetry(TelemetryKeys.JourneyId, this.journeyId);
 	}
 
@@ -39,8 +46,10 @@ class TelemetryHelper {
 
 		if (error) {
 			let parsedError = parseError(error);
+
 			this.actionContext.telemetry.properties.error =
 				JSON.stringify(parsedError);
+
 			this.actionContext.telemetry.properties.errorMessage =
 				parsedError.message;
 		}
@@ -53,6 +62,7 @@ class TelemetryHelper {
 
 	public logError(layer: string, tracePoint: string, error: Error): void {
 		let parsedError = parseError(error);
+
 		this.telemetryReporter.sendTelemetryEvent(tracePoint, {
 			"journeyId": this.journeyId,
 			"command": this.command,

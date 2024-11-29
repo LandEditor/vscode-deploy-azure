@@ -279,9 +279,11 @@ export class TemplateParameterHelper {
 								if (addonProfiles.httpapplicationrouting) {
 									addonProfiles.httpApplicationRouting =
 										addonProfiles.httpapplicationrouting;
+
 									delete addonProfiles[
 										"httpapplicationrouting"
 									];
+
 									detailedResource.properties.addonProfiles =
 										addonProfiles;
 								}
@@ -292,6 +294,7 @@ export class TemplateParameterHelper {
 								let armRestClient = new ArmRestClient(
 									inputs.azureSession,
 								);
+
 								await armRestClient.getAksKubeConfig(
 									detailedResource.id,
 								);
@@ -310,6 +313,7 @@ export class TemplateParameterHelper {
 
 						break;
 					}
+
 					break;
 
 				case PreDefinedDataSourceIds.WindowsApp:
@@ -373,6 +377,7 @@ export class TemplateParameterHelper {
 						inputs.pipelineConfiguration.params[
 							constants.TargetResource
 						] = selectedResource.data;
+
 						inputs.pipelineConfiguration.template =
 							matchingPipelineTemplates.find(
 								(template) =>
@@ -382,6 +387,7 @@ export class TemplateParameterHelper {
 									),
 							);
 					}
+
 					break;
 
 				default:
@@ -415,8 +421,10 @@ export class TemplateParameterHelper {
 				{ placeHolder: Messages.selectSubscription },
 				TelemetryKeys.SubscriptionListCount,
 			);
+
 		inputs.subscriptionId =
 			selectedSubscription.data.subscription.subscriptionId;
+
 		inputs.azureSession = await getSubscriptionSession(
 			inputs.subscriptionId,
 		);
@@ -465,6 +473,7 @@ export class TemplateParameterHelper {
 					parameter.defaultValue,
 					mustacheContext,
 				);
+
 				inputs.pipelineConfiguration.params[parameter.name] =
 					renderedDefaultValue;
 			} else {
@@ -480,11 +489,13 @@ export class TemplateParameterHelper {
 						var port = templateHelper.getDockerPort(
 							inputs.sourceRepository.localPath,
 						);
+
 						port = port ? port : parameter.defaultValue;
 
 						inputs.pipelineConfiguration.params[parameter.name] =
 							port;
 					}
+
 					break;
 
 				default:

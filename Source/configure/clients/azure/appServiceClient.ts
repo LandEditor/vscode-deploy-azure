@@ -29,8 +29,11 @@ const uuid = require("uuid/v4");
 
 export class AppServiceClient extends AzureResourceClient {
 	private static resourceType = "Microsoft.Web/sites";
+
 	private webSiteManagementClient: WebSiteManagementClient;
+
 	private tenantId: string;
+
 	private environment: AzureEnvironment;
 
 	constructor(
@@ -40,11 +43,14 @@ export class AppServiceClient extends AzureResourceClient {
 		subscriptionId: string,
 	) {
 		super(credentials, subscriptionId);
+
 		this.webSiteManagementClient = new WebSiteManagementClient(
 			credentials,
 			subscriptionId,
 		);
+
 		this.tenantId = tenantId;
+
 		this.environment = environment;
 	}
 
@@ -83,6 +89,7 @@ export class AppServiceClient extends AzureResourceClient {
 
 			resourceList = filteredResourceList;
 		}
+
 		return resourceList;
 	}
 
@@ -95,6 +102,7 @@ export class AppServiceClient extends AzureResourceClient {
 			new ParsedAzureResourceId(resourceId);
 
 		let publishProfile = "";
+
 		this.webSiteManagementClient.webApps.listPublishingProfileXmlWithSecrets(
 			parsedResourceId.resourceGroup,
 			parsedResourceId.resourceName,
@@ -103,9 +111,11 @@ export class AppServiceClient extends AzureResourceClient {
 				if (err) {
 					deferred.reject(err);
 				}
+
 				response.on("data", (chunk: Buffer) => {
 					publishProfile += chunk;
 				});
+
 				response.on("end", () => {
 					deferred.resolve(publishProfile);
 				});
@@ -146,6 +156,7 @@ export class AppServiceClient extends AzureResourceClient {
 		resourceId: string,
 	): Promise<SiteConfigResource> {
 		let siteConfig = await this.getAppServiceConfig(resourceId);
+
 		siteConfig.scmType = ScmType.VSTSRM;
 
 		let parsedResourceId: ParsedAzureResourceId = new ParsedAzureResourceId(
@@ -297,11 +308,14 @@ export enum ScmType {
 export interface DeploymentMessage {
 	// tslint:disable-next-line: no-reserved-keywords
 	type: string;
+
 	message: string;
 }
 
 export interface VSTSDeploymentMessage extends DeploymentMessage {
 	VSTSRM_BuildDefinitionWebAccessUrl?: string;
+
 	VSTSRM_ConfiguredCDEndPoint: string;
+
 	VSTSRM_BuildWebAccessUrl: string;
 }

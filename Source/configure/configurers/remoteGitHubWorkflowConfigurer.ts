@@ -27,6 +27,7 @@ import { LocalGitHubWorkflowConfigurer } from "./localGithubWorkflowConfigurer";
 
 export interface File {
 	path: string;
+
 	content: string;
 }
 
@@ -34,15 +35,25 @@ const Layer: string = "RemoteGitHubWorkflowConfigurer";
 
 export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigurer {
 	private azureSession: AzureSession;
+
 	private assets: { [key: string]: any } = {};
+
 	private inputs: WizardInputs;
+
 	private secrets: { [key: string]: any } = {};
+
 	private variables: { [key: string]: any } = {};
+
 	private system: { [key: string]: any } = {};
+
 	private filesToCommit: File[] = [];
+
 	private mustacheContext: StringMap<any>;
+
 	private template: RemotePipelineTemplate;
+
 	private localGitHelper: LocalGitRepoHelper;
+
 	private templateServiceClient: ITemplateServiceClient;
 
 	constructor(
@@ -50,18 +61,23 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 		localGitHelper: LocalGitRepoHelper,
 	) {
 		super(localGitHelper);
+
 		this.azureSession = azureSession;
+
 		this.localGitHelper = localGitHelper;
 	}
 
 	public async getInputs(wizardInputs: WizardInputs): Promise<void> {
 		this.inputs = wizardInputs;
+
 		this.githubClient = new GithubClient(
 			wizardInputs.githubPATToken,
 			wizardInputs.sourceRepository.remoteUrl,
 		);
+
 		this.templateServiceClient =
 			await TemplateServiceClientFactory.getClient();
+
 		this.template = wizardInputs.pipelineConfiguration
 			.template as RemotePipelineTemplate;
 
@@ -82,6 +98,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 
 			throw error;
 		}
+
 		this.template.configuration =
 			templateConverter.convertToLocalMustacheExpression(
 				extendedPipelineTemplate.configuration,
@@ -107,6 +124,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 			let expression = variable.value;
 
 			let value = MustacheHelper.render(expression, this.mustacheContext);
+
 			this.variables[variable.id] = value;
 		}
 	}
@@ -151,9 +169,12 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 		inputs: WizardInputs,
 	): Promise<string[]> {
 		let workflowFile = await this.getWorkflowFile(inputs);
+
 		this.filesToCommit.push(workflowFile);
+
 		this.filesToCommit.forEach(async (file) => {
 			await this.localGitHelper.addContentToFile(file.content, file.path);
+
 			await vscode.window.showTextDocument(vscode.Uri.file(file.path));
 		});
 
@@ -165,6 +186,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 			switch (asset.type) {
 				case "AzureCredentials:SPN":
 					const subscriptionId = this.inputs.subscriptionId;
+
 					this.assets[asset.id] = await vscode.window.withProgress(
 						{
 							location: vscode.ProgressLocation.Notification,
@@ -199,6 +221,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 					let secretKey: string = asset.inputs["secretKey"];
 
 					let secretValue: string = asset.inputs["secretvalue"];
+
 					await vscode.window.withProgress(
 						{
 							location: vscode.ProgressLocation.Notification,
@@ -211,6 +234,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 							);
 						},
 					);
+
 					this.secrets[asset.id] = "{{ secrets." + secretKey + " }}";
 
 					break;
@@ -219,6 +243,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 					let source: string = asset.inputs["source"];
 
 					let destination: string = asset.inputs["destination"];
+
 					await vscode.window.withProgress(
 						{
 							location: vscode.ProgressLocation.Notification,
@@ -233,6 +258,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 
 							let fileContent =
 								await this.getTemplateFile(source);
+
 							this.filesToCommit.push({
 								path: destination,
 								content: fileContent,
@@ -251,6 +277,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 
 						const armUri =
 							"/providers/Microsoft.Web/availableStacks?osTypeSelected=Linux&api-version=2019-08-01";
+
 						this.assets[asset.id] =
 							await nodeVersionConverter.webAppRuntimeNodeVersionConverter(
 								nodeVersion,
@@ -258,6 +285,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 								this.azureSession,
 							);
 					}
+
 					break;
 
 				case "WindowsWebAppNodeVersionConverter":
@@ -267,6 +295,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 
 						const armUri =
 							"/providers/Microsoft.Web/availableStacks?osTypeSelected=Windows&api-version=2019-08-01";
+
 						this.assets[asset.id] =
 							await nodeVersionConverter.webAppRuntimeNodeVersionConverter(
 								nodeVersion,
@@ -274,6 +303,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 								this.azureSession,
 							);
 					}
+
 					break;
 
 				case "AzureCredentials:PublishProfile":
@@ -322,6 +352,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 								},
 							);
 					}
+
 					break;
 
 				default:
@@ -342,6 +373,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 		);
 
 		let workflowFileContent: string;
+
 		await vscode.window.withProgress(
 			{
 				location: vscode.ProgressLocation.Notification,
@@ -355,11 +387,13 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 		);
 
 		let workFlowFileName: string = pipelineDefinition.destinationFileName;
+
 		workFlowFileName = await this.getPathToPipelineFile(
 			inputs,
 			this.localGitHelper,
 			workFlowFileName,
 		);
+
 		inputs.pipelineConfiguration.filePath = workFlowFileName;
 
 		return {
@@ -389,6 +423,7 @@ export class RemoteGitHubWorkflowConfigurer extends LocalGitHubWorkflowConfigure
 					return MustacheHelper.render(content, this.mustacheContext);
 				}
 			}
+
 			throw new Error(
 				utils.format(Messages.templateFileNotFound, fileName),
 			);

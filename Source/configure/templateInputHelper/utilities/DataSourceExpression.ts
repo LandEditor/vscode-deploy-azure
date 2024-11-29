@@ -4,8 +4,11 @@ import { DataSourceUtility } from "./DataSourceUtility";
 
 export class DataSourceExpression {
 	public operator: Operator;
+
 	public leftChild?: DataSourceExpression;
+
 	public rightChild?: DataSourceExpression;
+
 	public value?: string;
 
 	private _dataSources: DataSource[] = [];
@@ -153,9 +156,13 @@ export class DataSourceExpression {
 		dataSources: DataSource[],
 	) {
 		this.operator = operator;
+
 		this.leftChild = leftChild;
+
 		this.rightChild = rightChild;
+
 		this.value = value;
+
 		this._dataSources = dataSources;
 	}
 
@@ -192,11 +199,13 @@ export class DataSourceExpression {
 		);
 
 		var parts: string[] = [];
+
 		operators.forEach((operator: string) => {
 			var delimiter: string = " " + operator + " ";
 
 			if (id.indexOf(delimiter) !== -1) {
 				parts = id.split(delimiter);
+
 				parts[2] = Operator[operator as any];
 
 				return;

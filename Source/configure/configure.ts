@@ -97,6 +97,7 @@ export async function configurePipeline(node: IResourceNode | vscode.Uri) {
 						TelemetryKeys.AzureLoginOption,
 						"SignIn",
 					);
+
 					await vscode.window.withProgress(
 						{
 							location: vscode.ProgressLocation.Notification,
@@ -106,6 +107,7 @@ export async function configurePipeline(node: IResourceNode | vscode.Uri) {
 							await vscode.commands.executeCommand(
 								"azure-account.login",
 							);
+
 							await extensionVariables.azureAccountExtensionApi.waitForSubscriptions();
 						},
 					);
@@ -118,6 +120,7 @@ export async function configurePipeline(node: IResourceNode | vscode.Uri) {
 						TelemetryKeys.AzureLoginOption,
 						"SignUp",
 					);
+
 					await vscode.commands.executeCommand(
 						"azure-account.createAccount",
 					);
@@ -133,10 +136,12 @@ export async function configurePipeline(node: IResourceNode | vscode.Uri) {
 			}
 
 			const orchestrator = new Orchestrator();
+
 			await orchestrator.configure(node);
 		} catch (error) {
 			if (!(error instanceof UserCancelledError)) {
 				vscode.window.showErrorMessage(error.message);
+
 				extensionVariables.outputChannel.appendLine(error.message);
 
 				if (error instanceof WhiteListedError) {
@@ -144,6 +149,7 @@ export async function configurePipeline(node: IResourceNode | vscode.Uri) {
 						TelemetryKeys.IsErrorWhitelisted,
 						"true",
 					);
+
 					telemetryHelper.setResult(Result.Succeeded, error);
 				} else {
 					telemetryHelper.setResult(Result.Failed, error);
@@ -157,30 +163,43 @@ export async function configurePipeline(node: IResourceNode | vscode.Uri) {
 
 class Orchestrator {
 	private inputs: WizardInputs;
+
 	private localGitRepoHelper: LocalGitRepoHelper;
+
 	private azureResourceClient: AzureResourceClient;
+
 	private workspacePath: string;
+
 	private controlProvider: ControlProvider;
+
 	private continueOrchestration: boolean = true;
+
 	private context: StringMap<any> = {};
+
 	private pipelineType: PipelineType;
 
 	public constructor() {
 		this.inputs = new WizardInputs();
+
 		this.controlProvider = new ControlProvider();
+
 		UniqueResourceNameSuffix = uuid().substr(0, 5);
+
 		this.context["isResourceAlreadySelected"] = false;
+
 		this.context["resourceId"] = "";
 	}
 
 	public async configure(node: IResourceNode | vscode.Uri): Promise<void> {
 		telemetryHelper.setCurrentStep("GetAllRequiredInputs");
+
 		await this.getInputs(node);
 
 		if (this.continueOrchestration) {
 			if (this.doesLanguageAndTargetSupportRemoteProvisioning()) {
 				return await this.configurePipelineRemotely();
 			}
+
 			return this.ConfigurePipelineLocally();
 		}
 	}
@@ -205,8 +224,10 @@ class Orchestrator {
 	private async getAzureResource(targetType: TargetResourceType) {
 		const azureResourceSelector =
 			ResourceSelectorFactory.getAzureResourceSelector(targetType);
+
 		this.inputs.targetResource.resource =
 			await azureResourceSelector.getAzureResource(this.inputs);
+
 		this.azureResourceClient =
 			ResourceSelectorFactory.getAzureResourceClient(
 				targetType,
@@ -215,6 +236,7 @@ class Orchestrator {
 				this.inputs.azureSession.tenantId,
 				this.inputs.subscriptionId,
 			);
+
 		telemetryHelper.setTelemetry(
 			TelemetryKeys.resourceType,
 			this.inputs.targetResource.resource.type,
@@ -222,10 +244,12 @@ class Orchestrator {
 
 		if (targetType === TargetResourceType.WebApp) {
 			this.context["resourceId"] = this.inputs.targetResource.resource.id;
+
 			telemetryHelper.setTelemetry(
 				TelemetryKeys.resourceKind,
 				this.inputs.targetResource.resource.kind,
 			);
+
 			telemetryHelper.setTelemetry(
 				TelemetryKeys.resourceIdHash,
 				Utilities.createSha256Hash(
@@ -256,6 +280,7 @@ class Orchestrator {
 								template.templateType === TemplateType.LOCAL,
 						);
 				}
+
 				if (this.inputs.pipelineConfiguration.template === undefined) {
 					telemetryHelper.logError(
 						Layer,
@@ -269,10 +294,12 @@ class Orchestrator {
 
 					throw new Error(Messages.TemplateNotFound);
 				}
+
 				break;
 
 			case TargetResourceType.WebApp:
 				let shortlistedTemplates = [];
+
 				shortlistedTemplates = this.inputs.potentialTemplates.filter(
 					(template) => template.targetKind === resource.kind,
 				);
@@ -299,6 +326,7 @@ class Orchestrator {
 
 					throw new Error(Messages.TemplateNotFound);
 				}
+
 				break;
 
 			default:
@@ -329,6 +357,7 @@ class Orchestrator {
 				.getConfiguration()
 				.get("deployToAzure.UseGithubForCreatingNewRepository"),
 		);
+
 		telemetryHelper.setTelemetry(
 			TelemetryKeys.FF_UseAzurePipelinesForGithub,
 			vscode.workspace
@@ -362,22 +391,27 @@ class Orchestrator {
 			const repoAnalysisResult = await this.getRepositoryAnalysis();
 
 			this.initializeClientFactories();
+
 			this.setPipelineType();
+
 			await this.getTemplatesByRepoAnalysis(repoAnalysisResult);
 
 			try {
 				if (!this.isResourceAlreadySelected()) {
 					await this.getAzureSubscription();
+
 					await this.getAzureResource(
 						this.getSelectedPipelineTargetType(),
 					);
 				}
 
 				this.selectTemplate(this.inputs.targetResource.resource);
+
 				telemetryHelper.setTelemetry(
 					TelemetryKeys.SelectedTemplate,
 					this.inputs.pipelineConfiguration.template.label,
 				);
+
 				telemetryHelper.setTelemetry(
 					TelemetryKeys.SelectedTemplateType,
 					this.inputs.pipelineConfiguration.template.templateType.toString(),
@@ -410,7 +444,9 @@ class Orchestrator {
 
 			const extendedPipelineTemplate =
 				await templateHelper.getTemplateParameters(template.id);
+
 			template.attributes = extendedPipelineTemplate.attributes;
+
 			template.parameters = extendedPipelineTemplate.parameters;
 
 			const controlProvider = new InputControlProvider(
@@ -418,6 +454,7 @@ class Orchestrator {
 				extendedPipelineTemplate,
 				this.context,
 			);
+
 			this.inputs.pipelineConfiguration.params =
 				await controlProvider.getAllPipelineTemplateInputs();
 		} else if (
@@ -430,6 +467,7 @@ class Orchestrator {
 
 			const template = this.inputs.pipelineConfiguration
 				.template as LocalPipelineTemplate;
+
 			await templateParameterHelper.setParameters(
 				template.parameters,
 				this.inputs,
@@ -484,6 +522,7 @@ class Orchestrator {
 					),
 			);
 		}
+
 		return null;
 	}
 
@@ -498,6 +537,7 @@ class Orchestrator {
 			if (!!folderNode.fsPath) {
 				// right click on a folder
 				this.workspacePath = folderNode.fsPath;
+
 				telemetryHelper.setTelemetry(
 					TelemetryKeys.SourceRepoLocation,
 					SourceOptions.CurrentWorkspace,
@@ -507,6 +547,7 @@ class Orchestrator {
 			) {
 				// right click on a resource
 				this.context["isResourceAlreadySelected"] = true;
+
 				this.context["resourceId"] =
 					this.inputs.targetResource.resource.id;
 			}
@@ -519,6 +560,7 @@ class Orchestrator {
 				// This is to handle when we have already identified the repository details.
 				await this.setWorkspace();
 			}
+
 			await this.getGitDetailsFromRepository();
 		} catch (error) {
 			telemetryHelper.logError(
@@ -546,6 +588,7 @@ class Orchestrator {
 					TelemetryKeys.MultipleWorkspaceFolders,
 					"false",
 				);
+
 				this.workspacePath = workspaceFolders[0].uri.fsPath;
 			} else {
 				telemetryHelper.setTelemetry(
@@ -561,12 +604,14 @@ class Orchestrator {
 						data: folder,
 					});
 				}
+
 				const selectedWorkspaceFolder =
 					await this.controlProvider.showQuickPick(
 						constants.SelectFromMultipleWorkSpace,
 						workspaceFolderOptions,
 						{ placeHolder: Messages.selectWorkspaceFolder },
 					);
+
 				this.workspacePath = selectedWorkspaceFolder.data.uri.fsPath;
 			}
 		} else {
@@ -618,6 +663,7 @@ class Orchestrator {
 							remotes.map((remote) => ({ label: remote.name })),
 							{ placeHolder: Messages.selectRemoteForBranch },
 						);
+
 					gitBranchDetails.remoteName = selectedRemote.label;
 				}
 			}
@@ -625,6 +671,7 @@ class Orchestrator {
 			// Set working directory relative to repository root
 			const gitRootDir =
 				await this.localGitRepoHelper.getGitRootDirectory();
+
 			this.inputs.pipelineConfiguration.workingDirectory = path
 				.relative(gitRootDir, this.workspacePath)
 				.split(path.sep)
@@ -645,6 +692,7 @@ class Orchestrator {
 			TelemetryKeys.RepoProvider,
 			this.inputs.sourceRepository.repositoryProvider,
 		);
+
 		telemetryHelper.setTelemetry(
 			TelemetryKeys.RepoId,
 			this.inputs.sourceRepository.repositoryId,
@@ -653,7 +701,9 @@ class Orchestrator {
 
 	private setDefaultRepositoryDetails(): void {
 		extensionVariables.isLocalRepo = true;
+
 		this.inputs.pipelineConfiguration.workingDirectory = ".";
+
 		this.inputs.sourceRepository = {
 			branch: "master",
 			commitId: "",
@@ -735,9 +785,11 @@ class Orchestrator {
 	): Promise<boolean> {
 		if (!!node.resource.id && node.resource.type != "cluster") {
 			this.inputs.subscriptionId = node.subscriptionId;
+
 			this.inputs.azureSession = await getSubscriptionSession(
 				this.inputs.subscriptionId,
 			);
+
 			this.azureResourceClient = new AppServiceClient(
 				this.inputs.azureSession.credentials,
 				this.inputs.azureSession.environment,
@@ -749,14 +801,17 @@ class Orchestrator {
 				const azureResource: GenericResource = await (
 					this.azureResourceClient as AppServiceClient
 				).getAppServiceResource(node.resource.id);
+
 				telemetryHelper.setTelemetry(
 					TelemetryKeys.resourceType,
 					azureResource.type,
 				);
+
 				telemetryHelper.setTelemetry(
 					TelemetryKeys.resourceKind,
 					azureResource.kind,
 				);
+
 				AzureResourceClient.validateTargetResourceType(azureResource);
 
 				if (
@@ -769,6 +824,7 @@ class Orchestrator {
 						).isScmTypeSet(node.resource.id)
 					) {
 						this.continueOrchestration = false;
+
 						await openBrowseExperience(node.resource.id);
 					}
 				}
@@ -787,10 +843,13 @@ class Orchestrator {
 			}
 		} else if (!!node.resource.id && node.resource.type === "cluster") {
 			this.inputs.subscriptionId = node.subscriptionId;
+
 			this.context["subscriptionId"] = this.inputs.subscriptionId;
+
 			this.inputs.azureSession = await getSubscriptionSession(
 				this.inputs.subscriptionId,
 			);
+
 			this.azureResourceClient = new AzureResourceClient(
 				this.inputs.azureSession.credentials,
 				this.inputs.subscriptionId,
@@ -800,16 +859,21 @@ class Orchestrator {
 				node.resource.id,
 				"2019-08-01",
 			);
+
 			telemetryHelper.setTelemetry(
 				TelemetryKeys.resourceType,
 				cluster.type,
 			);
+
 			AzureResourceClient.validateTargetResourceType(cluster);
+
 			cluster["parsedResourceId"] = new ParsedAzureResourceId(cluster.id);
+
 			this.inputs.targetResource.resource = cluster;
 
 			return true;
 		}
+
 		return false;
 	}
 
@@ -833,12 +897,16 @@ class Orchestrator {
 				{ placeHolder: Messages.selectSubscription },
 				TelemetryKeys.SubscriptionListCount,
 			);
+
 		this.inputs.subscriptionId =
 			selectedSubscription.data.subscription.subscriptionId;
+
 		this.context["subscriptionId"] = this.inputs.subscriptionId;
+
 		this.inputs.azureSession = await getSubscriptionSession(
 			this.inputs.subscriptionId,
 		);
+
 		telemetryHelper.setTelemetry(
 			TelemetryKeys.SubscriptionId,
 			this.inputs.subscriptionId,
@@ -866,6 +934,7 @@ class Orchestrator {
 						this.inputs.targetResource.resource,
 					),
 			);
+
 		appropriatePipelines = remotePipelines;
 
 		const pipelineMap = this.getMapOfUniqueLabels(appropriatePipelines);
@@ -911,6 +980,7 @@ class Orchestrator {
 				}
 			});
 		}
+
 		return pipelineMap;
 	}
 
@@ -944,6 +1014,7 @@ class Orchestrator {
 						),
 				),
 			);
+
 			applicationSettings =
 				repoAnalysisResult.applicationSettingsList.filter(
 					(applicationSetting) => {
@@ -957,6 +1028,7 @@ class Orchestrator {
 								) >= 0
 							);
 						}
+
 						return (
 							applicationSetting.language ===
 							this.inputs.pipelineConfiguration.template.language
@@ -964,6 +1036,7 @@ class Orchestrator {
 					},
 				);
 		}
+
 		this.context["repoAnalysisSettings"] = applicationSettings;
 
 		if (
@@ -978,6 +1051,7 @@ class Orchestrator {
 		if (applicationSettings.length === 1) {
 			this.inputs.repositoryAnalysisApplicationSettings =
 				applicationSettings[0];
+
 			this.inputs.pipelineConfiguration.workingDirectory =
 				applicationSettings[0].settings.workingDirectory;
 
@@ -998,6 +1072,7 @@ class Orchestrator {
 				data: workspacePath,
 			});
 		}
+
 		const selectedWorkspacePathItem =
 			await this.controlProvider.showQuickPick(
 				constants.SelectWorkspace,
@@ -1007,6 +1082,7 @@ class Orchestrator {
 
 		this.inputs.pipelineConfiguration.workingDirectory =
 			selectedWorkspacePathItem.data;
+
 		this.inputs.repositoryAnalysisApplicationSettings =
 			repoAnalysisResult.applicationSettingsList.find(
 				(applicationSettings) => {
@@ -1066,6 +1142,7 @@ class Orchestrator {
 								this.inputs,
 								constants.serviceManifest,
 							);
+
 							await this.localGitRepoHelper.createAndDisplayManifestFile(
 								constants.ingressManifest,
 								pipelineConfigurer,
@@ -1096,7 +1173,9 @@ class Orchestrator {
 						this.inputs,
 						this.localGitRepoHelper,
 					);
+
 				filesToCommit.push(this.inputs.pipelineConfiguration.filePath);
+
 				await this.localGitRepoHelper.addContentToFile(
 					await templateHelper.renderContent(
 						(
@@ -1107,9 +1186,11 @@ class Orchestrator {
 					),
 					this.inputs.pipelineConfiguration.filePath,
 				);
+
 				await vscode.window.showTextDocument(
 					vscode.Uri.file(this.inputs.pipelineConfiguration.filePath),
 				);
+
 				telemetryHelper.setTelemetry(
 					TelemetryKeys.DisplayWorkflow,
 					"true",
@@ -1168,6 +1249,7 @@ class Orchestrator {
 		try {
 			// prerequisite params
 			telemetryHelper.setCurrentStep("ConfiguringPreRequisiteParams");
+
 			await provisioningConfigurer.createPreRequisiteParams(this.inputs);
 
 			// Draft pipeline step
@@ -1193,8 +1275,10 @@ class Orchestrator {
 			telemetryHelper.setCurrentStep(
 				"ConfiguringCompleteProvisioningPipeline",
 			);
+
 			provisioningConfiguration.provisioningMode =
 				provisioningMode.complete;
+
 			await provisioningConfigurer.postSteps(
 				provisioningConfiguration,
 				draftProvisioningPipeline.result
@@ -1204,6 +1288,7 @@ class Orchestrator {
 
 			// All done, now browse the pipeline
 			telemetryHelper.setCurrentStep("BrowsingPipeline");
+
 			await provisioningConfigurer.browseQueuedWorkflow();
 		} catch (error) {
 			telemetryHelper.logError(
@@ -1228,12 +1313,16 @@ class Orchestrator {
 			pipelineConfigurer.constructor.name === "AzurePipelineConfigurer"
 				? constants.azurePipeline
 				: constants.githubWorkflow;
+
 		telemetryHelper.setTelemetry(
 			TelemetryKeys.SelectedCICDProvider,
 			selectedCICDProvider,
 		);
+
 		await pipelineConfigurer.getInputs(this.inputs);
+
 		telemetryHelper.setCurrentStep("CreatePreRequisites");
+
 		await pipelineConfigurer.createPreRequisites(
 			this.inputs,
 			!!this.azureResourceClient
@@ -1281,9 +1370,11 @@ class Orchestrator {
 		}
 
 		telemetryHelper.setCurrentStep("CheckInPipeline");
+
 		await this.checkInPipelineFileToRepository(pipelineConfigurer);
 
 		telemetryHelper.setCurrentStep("CreateAndRunPipeline");
+
 		await pipelineConfigurer.createAndQueuePipeline(this.inputs);
 
 		telemetryHelper.setCurrentStep("PostPipelineCreation");
@@ -1299,6 +1390,7 @@ class Orchestrator {
 		);
 
 		telemetryHelper.setCurrentStep("DisplayCreatedPipeline");
+
 		pipelineConfigurer.browseQueuedPipeline();
 	}
 
@@ -1307,6 +1399,7 @@ class Orchestrator {
 			this.inputs.azureSession.credentials,
 			this.inputs.githubPATToken,
 		);
+
 		ProvisioningServiceClientFactory.initialize(
 			this.inputs.azureSession.credentials,
 			this.inputs.githubPATToken,

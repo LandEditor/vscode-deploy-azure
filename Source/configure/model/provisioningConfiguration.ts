@@ -1,5 +1,6 @@
 export interface Authorization {
 	scheme: string;
+
 	parameters: { [key: string]: string };
 }
 
@@ -9,16 +10,23 @@ export interface CodeRepository {
 	type: string;
 
 	defaultBranch: string;
+
 	authorizationInfo: Authorization;
 }
 
 export interface ProvisioningConfiguration {
 	id: string;
+
 	pipelineTemplateId: string;
+
 	pipelineTemplateParameters: { [key: string]: string };
+
 	branch: string;
+
 	provisioningMode: provisioningMode;
+
 	pipelineConfiguration?: DraftPipelineConfiguration;
+
 	result?: Result;
 }
 
@@ -35,6 +43,7 @@ export interface PipelineConfiguration {
 
 export interface CompletePipelineConfiguration extends PipelineConfiguration {
 	path: string;
+
 	commitId: string;
 }
 
@@ -44,11 +53,14 @@ export interface DraftPipelineConfiguration extends PipelineConfiguration {
 
 export interface File {
 	content: string;
+
 	path: string;
 }
 
 export interface Result {
 	status: string;
+
 	message: string;
+
 	pipelineConfiguration: PipelineConfiguration;
 }

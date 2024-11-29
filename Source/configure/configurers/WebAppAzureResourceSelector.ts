@@ -46,6 +46,7 @@ export class WebAppAzureResourceSelector implements IAzureResourceSelector {
 
 			throw new Error(Messages.setupAlreadyConfigured);
 		}
+
 		return <GenericResource>selectedResource.data;
 	}
 }

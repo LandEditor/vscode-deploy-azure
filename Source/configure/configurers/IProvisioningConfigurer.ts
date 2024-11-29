@@ -16,14 +16,17 @@ export interface IProvisioningConfigurer {
 		repository: string,
 		wizardInputs: WizardInputs,
 	): Promise<ProvisioningConfiguration>;
+
 	postSteps(
 		provisioningConfiguration: ProvisioningConfiguration,
 		draftPipelineConfiguration: DraftPipelineConfiguration,
 		inputs: WizardInputs,
 	): Promise<void>;
+
 	preSteps(
 		provisioningConfiguration: ProvisioningConfiguration,
 		inputs: WizardInputs,
 	): Promise<ProvisioningConfiguration>;
+
 	browseQueuedWorkflow(): Promise<void>;
 }

@@ -50,11 +50,15 @@ export class TemplateServiceClientFactory {
 		githubPatToken: string,
 	): void {
 		this.client = null;
+
 		this.credentials = credentials;
+
 		this.githubPatToken = githubPatToken;
 	}
 
 	private static client: ITemplateServiceClient;
+
 	private static credentials: ServiceClientCredentials;
+
 	private static githubPatToken: string;
 }

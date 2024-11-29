@@ -56,6 +56,7 @@ export async function mergingRepoAnalysisResults(
 		!!repoAnalysisParameters.applicationSettingsList
 	) {
 		analysisResult = new AnalysisResult();
+
 		repoAnalysisParameters.applicationSettingsList.forEach((settings) => {
 			analysisResult.languages.push(
 				settings.language as SupportedLanguage,
@@ -81,6 +82,7 @@ export async function mergingRepoAnalysisResults(
 			analysisResult.languages.push(SupportedLanguage.NONE);
 		}
 	}
+
 	return analysisResult;
 }
 
@@ -90,6 +92,7 @@ export function getTargetType(template: TemplateInfo): TargetResourceType {
 	} else if (template.attributes.deployTarget === "Azure:AKS") {
 		return TargetResourceType.AKS;
 	}
+
 	return TargetResourceType.None;
 }
 
@@ -113,6 +116,7 @@ export function getTargetKind(template: TemplateInfo): TargetKind {
 	} else {
 		targetKind = null;
 	}
+
 	return targetKind;
 }
 
@@ -164,6 +168,7 @@ export async function analyzeRepoAndListAppropriatePipeline(
 						templateList[SupportedLanguage.DOCKER],
 					);
 				}
+
 				break;
 
 			case SupportedLanguage.NODE:
@@ -175,6 +180,7 @@ export async function analyzeRepoAndListAppropriatePipeline(
 						templateList[SupportedLanguage.NODE],
 					);
 				}
+
 				break;
 
 			case SupportedLanguage.PYTHON:
@@ -186,6 +192,7 @@ export async function analyzeRepoAndListAppropriatePipeline(
 						templateList[SupportedLanguage.PYTHON],
 					);
 				}
+
 				break;
 
 			case SupportedLanguage.DOTNETCORE:
@@ -197,6 +204,7 @@ export async function analyzeRepoAndListAppropriatePipeline(
 						templateList[SupportedLanguage.DOTNETCORE],
 					);
 				}
+
 				break;
 
 			case SupportedLanguage.NONE:
@@ -208,6 +216,7 @@ export async function analyzeRepoAndListAppropriatePipeline(
 						templateList[SupportedLanguage.NONE],
 					);
 				}
+
 				break;
 
 			default:
@@ -258,6 +267,7 @@ export async function analyzeRepoAndListAppropriatePipeline(
 							targetResource.type.toLowerCase(),
 				)
 			: templateResult;
+
 	templateResult =
 		targetResource && !!targetResource.kind
 			? templateResult.filter(
@@ -267,6 +277,7 @@ export async function analyzeRepoAndListAppropriatePipeline(
 							targetResource.kind.toLowerCase(),
 				)
 			: templateResult;
+
 	templateResult = templateResult.filter(
 		(pipelineTemplate) => pipelineTemplate.enabled,
 	);
@@ -292,9 +303,11 @@ async function convertToPipelineTemplate(
 				workingDirectory: templateInfo.workingDirectory,
 				description: templateInfo.templateDescription,
 			};
+
 			pipelineTemplates.push(remoteTemplate);
 		});
 	}
+
 	return pipelineTemplates;
 }
 
@@ -325,6 +338,7 @@ export async function getTemplates(repoAnalysisParameters: RepositoryAnalysis) {
 	const client = await TemplateServiceClientFactory.getClient();
 
 	let templates: TemplateInfo[];
+
 	await telemetryHelper.executeFunctionWithTimeTelemetry(async () => {
 		templates = await client.getTemplates(repoAnalysisParameters);
 	}, TelemetryKeys.TemplateServiceDuration);
@@ -354,6 +368,7 @@ export async function analyzeRepoAndListAppropriatePipeline2(
 		try {
 			if (!!resource) {
 				localPipelineTemplates = [];
+
 				remoteTemplates = await getFilteredTemplates(resource.type);
 			} else if (
 				repoAnalysisParameters &&
@@ -361,8 +376,10 @@ export async function analyzeRepoAndListAppropriatePipeline2(
 			) {
 				remoteTemplates = await getTemplates(repoAnalysisParameters);
 			}
+
 			pipelineTemplates =
 				await convertToPipelineTemplate(remoteTemplates);
+
 			pipelineTemplates = pipelineTemplates.concat(
 				localPipelineTemplates,
 			);
@@ -374,6 +391,7 @@ export async function analyzeRepoAndListAppropriatePipeline2(
 			return pipelineTemplates;
 		} catch (err) {
 			pipelineTemplates = [];
+
 			telemetryHelper.logError(
 				Layer,
 				TracePoints.TemplateServiceCallFailed,
@@ -394,6 +412,7 @@ export async function getTemplateParameters(
 
 	try {
 		let serviceClient = await TemplateServiceClientFactory.getClient();
+
 		parameters = await serviceClient.getTemplateParameters(templateId);
 
 		return parameters;
@@ -451,17 +470,20 @@ export async function renderContent(
 	context: MustacheContext,
 ): Promise<string> {
 	let deferred: Q.Deferred<string> = Q.defer();
+
 	fs.readFile(templateFilePath, { encoding: "utf8" }, async (error, data) => {
 		if (error) {
 			throw new Error(error.message);
 		} else {
 			let updatedContext: MustacheContext;
+
 			updatedContext = {
 				...MustacheHelper.getHelperMethods(),
 				...context,
 			};
 
 			let fileContent = Mustache.render(data, updatedContext);
+
 			deferred.resolve(fileContent);
 		}
 	});
@@ -477,12 +499,14 @@ export function getDockerPort(
 
 	if (!dockerfilePath) {
 		let files = fs.readdirSync(repoPath);
+
 		files.some((fileName) => {
 			if (fileName.toLowerCase().endsWith("dockerfile")) {
 				dockerfilePath = fileName;
 
 				return true;
 			}
+
 			return false;
 		});
 
@@ -511,6 +535,7 @@ export function getDockerPort(
 				return ports[0];
 			}
 		}
+
 		return null;
 	} catch (err) {
 		telemetryHelper.logError(
@@ -525,18 +550,24 @@ export function getDockerPort(
 
 async function analyzeRepo(repoPath: string): Promise<AnalysisResult> {
 	let deferred: Q.Deferred<AnalysisResult> = Q.defer();
+
 	fs.readdir(repoPath, (err, files: string[]) => {
 		let result: AnalysisResult = new AnalysisResult();
+
 		result.languages = [];
+
 		result.languages = isDockerApp(files)
 			? result.languages.concat(SupportedLanguage.DOCKER)
 			: result.languages;
+
 		result.languages = isNodeRepo(files)
 			? result.languages.concat(SupportedLanguage.NODE)
 			: result.languages;
+
 		result.languages = isPythonRepo(files)
 			? result.languages.concat(SupportedLanguage.PYTHON)
 			: result.languages;
+
 		result.languages = isDotnetCoreRepo(files)
 			? result.languages.concat(SupportedLanguage.DOTNETCORE)
 			: result.languages;
@@ -600,6 +631,7 @@ export function isFunctionAppType(targetKind: TargetKind): boolean {
 
 export class AnalysisResult {
 	public languages: SupportedLanguage[] = [];
+
 	public isFunctionApp: boolean = false;
 	// public isContainerized: boolean;
 }

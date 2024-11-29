@@ -34,6 +34,7 @@ export async function browsePipeline(node: AzureTreeItem): Promise<void> {
 					session.tenantId,
 					parsedAzureResourceId.subscriptionId,
 				);
+
 				await browsePipelineInternal(node.fullId, appServiceClient);
 			} else {
 				throw new Error(
@@ -43,7 +44,9 @@ export async function browsePipeline(node: AzureTreeItem): Promise<void> {
 		} catch (error) {
 			if (!(error instanceof UserCancelledError)) {
 				extensionVariables.outputChannel.appendLine(error.message);
+
 				vscode.window.showErrorMessage(error.message);
+
 				telemetryHelper.setResult(Result.Failed, error);
 			} else {
 				telemetryHelper.setResult(Result.Canceled, error);
@@ -62,6 +65,7 @@ async function browsePipelineInternal(
 		!!siteConfig &&
 		!!siteConfig.scmType &&
 		siteConfig.scmType.toLowerCase();
+
 	telemetryHelper.setTelemetry(TelemetryKeys.ScmType, scmType);
 
 	if (scmType === ScmType.VSTSRM.toLowerCase()) {
@@ -86,6 +90,7 @@ async function browsePipelineInternal(
 			vscode.commands.executeCommand("configure-pipeline", {
 				fullId: resourceId,
 			});
+
 			telemetryHelper.setTelemetry(
 				TelemetryKeys.ClickedConfigurePipeline,
 				"true",
@@ -103,7 +108,9 @@ async function browseAzurePipeline(
 	try {
 		let pipelineUrl =
 			await appServiceClient.getAzurePipelineUrl(resourceId);
+
 		vscode.env.openExternal(vscode.Uri.parse(pipelineUrl));
+
 		telemetryHelper.setTelemetry(
 			TelemetryKeys.BrowsedExistingPipeline,
 			"true",
@@ -114,6 +121,7 @@ async function browseAzurePipeline(
 			TracePoints.CorruptMetadataForVstsRmScmType,
 			ex,
 		);
+
 		await openDeploymentCenter(resourceId, appServiceClient);
 	}
 }
@@ -134,7 +142,9 @@ async function browseGitHubWorkflow(
 		webAppSourceControl.properties.isGitHubAction
 	) {
 		let url = `${webAppSourceControl.properties.repoUrl}/actions?query=${encodeURI('workflow:"' + (!!webAppMetaData.properties.configName ? webAppMetaData.properties.configName : webAppMetaData.properties.configPath) + '"')}`;
+
 		await vscode.env.openExternal(vscode.Uri.parse(url));
+
 		telemetryHelper.setTelemetry(
 			TelemetryKeys.BrowsedExistingPipeline,
 			"true",
@@ -150,6 +160,8 @@ async function openDeploymentCenter(
 ): Promise<void> {
 	let deploymentCenterUrl: string =
 		await appServiceClient.getDeploymentCenterUrl(resourceId);
+
 	await vscode.env.openExternal(vscode.Uri.parse(deploymentCenterUrl));
+
 	telemetryHelper.setTelemetry(TelemetryKeys.BrowsedDeploymentCenter, "true");
 }

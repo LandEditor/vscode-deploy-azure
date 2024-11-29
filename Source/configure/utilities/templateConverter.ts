@@ -11,6 +11,7 @@ export function convertExpression(expression: string): string {
 	if (!match) {
 		return expression;
 	}
+
 	let localMustacheExpression = "";
 
 	let openingHelperFunc = "{{";
@@ -23,6 +24,7 @@ export function convertExpression(expression: string): string {
 
 	if (expression.startsWith("{{{")) {
 		closingHelperFunc = "}}}";
+
 		openingHelperFunc = "{{{";
 	}
 
@@ -34,6 +36,7 @@ export function convertExpression(expression: string): string {
 			openingHelperFunc.length + 1,
 			expression.indexOf(" "),
 		);
+
 		parts.push(
 			expression.substring(0, expression.indexOf(" ")) +
 				closingHelperFunc,
@@ -55,14 +58,17 @@ export function convertExpression(expression: string): string {
 				"{{{" + input[0] + "}}}",
 				input.index,
 			);
+
 			input = parametersRegex.exec(part);
 		}
+
 		parts.push(part);
 	} else {
 		helperName = expression.substring(
 			openingHelperFunc.length + 1,
 			expression.indexOf(closingHelperFunc),
 		);
+
 		parts.push(
 			expression.substring(
 				0,
@@ -90,8 +96,11 @@ export function convertExpression(expression: string): string {
 			expression.indexOf(closingHelperFunc) + closingHelperFunc.length,
 			expression.indexOf(openingHelperFunc + "/" + helperName),
 		);
+
 		part = convertStringMustachExpression(part);
+
 		parts.push(part);
+
 		parts.push(
 			expression.substring(
 				expression.indexOf(openingHelperFunc + "/" + helperName),
@@ -105,6 +114,7 @@ export function convertExpression(expression: string): string {
 	} else {
 		localMustacheExpression = parts.join("");
 	}
+
 	return localMustacheExpression;
 }
 
@@ -115,9 +125,12 @@ export function convertStringMustachExpression(text: string): string {
 
 	while (result) {
 		let exp = convertExpression(result[0]);
+
 		text = replaceAtIndex(text, result[0], exp, result.index);
+
 		result = helperRegExp.exec(text);
 	}
+
 	return text;
 }
 
@@ -133,8 +146,10 @@ export function sanitizeExpression(text: string): string {
 				result.index,
 			);
 		}
+
 		result = enclosedParametersRegex.exec(text);
 	}
+
 	return text;
 }
 
@@ -149,6 +164,7 @@ export function convertToLocalMustacheExpression(object: any): any {
 		for (let i = 0; i < object.length; i++) {
 			object[i] = convertToLocalMustacheExpression(object[i]);
 		}
+
 		return object;
 	}
 
@@ -171,7 +187,9 @@ function replaceAtIndex(
 		let preStr = text.substr(0, index);
 
 		let postStr = text.substr(index + searchValue.length);
+
 		text = preStr + replaceValue + postStr;
 	}
+
 	return text;
 }

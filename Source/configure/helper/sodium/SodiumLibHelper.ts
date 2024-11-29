@@ -6,6 +6,7 @@ export class SodiumLibHelper {
 	constructor(key: Uint8Array | string) {
 		if (typeof key == "string") {
 			let decodedKey = SodiumLibHelper.decodeFromBase64(key);
+
 			this.key = SodiumLibHelper.convertStringToUint8Array(decodedKey);
 		} else {
 			this.key = key;

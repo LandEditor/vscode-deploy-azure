@@ -30,13 +30,16 @@ const Layer = "Extension";
 
 export async function activate(context: vscode.ExtensionContext) {
 	extensionVariables.reporter = createTelemetryReporter(context);
+
 	registerUiVariables(context);
 
 	await callWithTelemetryAndErrorHandling(
 		"azuredeploy.activate",
 		async (activateContext: IActionContext) => {
 			activateContext.telemetry.properties.isActivationEvent = "true";
+
 			telemetryHelper.initialize(activateContext, "activate");
+
 			await telemetryHelper.executeFunctionWithTimeTelemetry(async () => {
 				await activateConfigurePipeline();
 			}, TelemetryKeys.ExtensionActivationDuration);
@@ -128,9 +131,13 @@ function registerUiVariables(context: vscode.ExtensionContext) {
 	// It also facilitates registering command and called events telemetry.
 	extensionVariables.outputChannel =
 		vscode.window.createOutputChannel("Deploy to Azure");
+
 	context.subscriptions.push(extensionVariables.outputChannel);
+
 	extensionVariables.context = context;
+
 	extensionVariables.ui = new AzureUserInput(context.globalState);
+
 	registerUIExtensionVariables(extensionVariables);
 }
 

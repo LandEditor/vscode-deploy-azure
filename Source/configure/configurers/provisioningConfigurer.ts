@@ -31,6 +31,7 @@ import { IProvisioningConfigurer } from "./IProvisioningConfigurer";
 // tslint:disable-next-line:interface-name
 interface DraftFile {
 	content: string;
+
 	path: string; // This path will be one returned by provisioning service and it will based on linux
 	absPath: string; // This is absolute path of file for native OS
 }
@@ -39,12 +40,18 @@ const Layer: string = "ProvisioningConfigurer";
 
 export class ProvisioningConfigurer implements IProvisioningConfigurer {
 	private provisioningServiceClient: IProvisioningServiceClient;
+
 	private queuedPipelineUrl: string;
+
 	private refreshTime: number = 5 * 1000;
+
 	private maxNonStatusRetry: number = 60; // retries for max 5 min
 	private localGitRepoHelper: LocalGitRepoHelper;
+
 	private filesToCommit: DraftFile[] = [];
+
 	private committedWorkflow: string;
+
 	private tempWorkflowDirPath: string;
 
 	constructor(localGitRepoHelper: LocalGitRepoHelper) {
@@ -140,6 +147,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 		} else {
 			if (statusNotFound < this.maxNonStatusRetry) {
 				statusNotFound++;
+
 				await sleepForMilliSeconds(this.refreshTime);
 
 				return await this.awaitProvisioningPipelineJob(
@@ -181,6 +189,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 						TelemetryKeys.BrowsePipelineClicked,
 						"true",
 					);
+
 					vscode.env.openExternal(
 						vscode.Uri.parse(this.queuedPipelineUrl),
 					);
@@ -194,6 +203,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 		inputs: WizardInputs,
 	): Promise<void> {
 		await this.populateFilesToCommit(draftPipelineConfiguration);
+
 		await this.showPipelineFiles();
 
 		const displayMessage =
@@ -227,6 +237,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 			if (this.getInputDescriptor(inputs, "azureAuth")) {
 				await this.createSPN(inputs);
 			}
+
 			provisioningServiceResponse = await vscode.window.withProgress(
 				{
 					location: vscode.ProgressLocation.Notification,
@@ -237,6 +248,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 						telemetryHelper.setCurrentStep(
 							"QueuedCompleteProvisioiningPipeline",
 						);
+
 						provisioningConfiguration.pipelineConfiguration =
 							await this.createFilesToCheckin(
 								draftPipelineConfiguration.id,
@@ -252,6 +264,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 						if (completeProvisioningSvcResp.id != "") {
 							const OrgAndRepoDetails =
 								inputs.sourceRepository.repositoryId.split("/");
+
 							telemetryHelper.setCurrentStep(
 								"AwaitCompleteProvisioningPipeline",
 							);
@@ -271,6 +284,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 							TracePoints.RemotePipelineConfiguringFailed,
 							error,
 						);
+
 						vscode.window.showErrorMessage(
 							utils.format(
 								Messages.ConfiguringGitubWorkflowFailed,
@@ -287,6 +301,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 				TelemetryKeys.PipelineDiscarded,
 				"true",
 			);
+
 			await this.moveWorkflowFilesToLocalRepo();
 
 			throw new UserCancelledError(Messages.operationCancelled);
@@ -361,6 +376,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 				file.content,
 				file.absPath,
 			);
+
 			await vscode.window.showTextDocument(
 				vscode.Uri.file(file.absPath),
 				{ preview: false },
@@ -376,7 +392,9 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 			provisioningConfiguration.result
 				.pipelineConfiguration as CompletePipelineConfiguration
 		).commitId;
+
 		this.queuedPipelineUrl = `https://github.com/${inputs.sourceRepository.repositoryId}/commit/${commitId}/checks`;
+
 		this.committedWorkflow = `https://github.com/${inputs.sourceRepository.repositoryId}/commit/${commitId}`;
 	}
 
@@ -384,6 +402,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 		draftPipelineConfiguration: DraftPipelineConfiguration,
 	): Promise<void> {
 		let destination: string;
+
 		this.tempWorkflowDirPath = fse.mkdtempSync(
 			os.tmpdir().concat(Path.sep),
 		);
@@ -392,6 +411,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 			const pathList = file.path.split("/");
 
 			const filePath: string = pathList.join(Path.sep);
+
 			destination = await this.getPathToFile(
 				Path.basename(filePath),
 				Path.dirname(filePath),
@@ -400,6 +420,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 			const decodedData = new Buffer(file.content, "base64").toString(
 				"utf-8",
 			);
+
 			this.filesToCommit.push({
 				absPath: destination,
 				content: decodedData,
@@ -471,6 +492,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 				},
 			);
 		}
+
 		const scope = InputControl.getInputDescriptorProperty(
 			inputDescriptor,
 			"scope",
@@ -570,6 +592,7 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 			const encodedContent = new Buffer(fileContent, "utf-8").toString(
 				"base64",
 			);
+
 			files.push({ path: file.path, content: encodedContent });
 		}
 
@@ -593,12 +616,15 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 				gitRootDirectory,
 				filePath,
 			);
+
 			fse.moveSync(file.absPath, filePathToLocalRepo);
+
 			await vscode.window.showTextDocument(
 				vscode.Uri.file(filePathToLocalRepo),
 				{ preview: false },
 			);
 		}
+
 		fse.removeSync(this.tempWorkflowDirPath);
 	}
 
@@ -608,7 +634,9 @@ export class ProvisioningConfigurer implements IProvisioningConfigurer {
 			this.tempWorkflowDirPath,
 			dirList.join(Path.sep),
 		);
+
 		fse.mkdirpSync(directoryPath);
+
 		telemetryHelper.setTelemetry(TelemetryKeys.WorkflowFileName, fileName);
 
 		return Path.join(directoryPath, fileName);

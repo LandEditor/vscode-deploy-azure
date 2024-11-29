@@ -27,9 +27,11 @@ export class LocalGitRepoHelper {
 		repositoryPath: string,
 	): LocalGitRepoHelper {
 		var repoService = new LocalGitRepoHelper();
+
 		repoService.initialize(repositoryPath);
 
 		let gitFolderExists = fs.existsSync(path.join(repositoryPath, ".git"));
+
 		telemetryHelper.setTelemetry(
 			TelemetryKeys.GitFolderExists,
 			gitFolderExists.toString(),
@@ -43,6 +45,7 @@ export class LocalGitRepoHelper {
 		repoPath: string,
 	): Promise<string> {
 		let deferred: Q.Deferred<string> = Q.defer();
+
 		fs.readdir(repoPath, (err, files: string[]) => {
 			if (files.indexOf(fileName) < 0) {
 				deferred.resolve(fileName);
@@ -71,6 +74,7 @@ export class LocalGitRepoHelper {
 	}
 
 	private gitReference: git.SimpleGit;
+
 	private constructor() {}
 
 	public async getUsername(): Promise<string> {
@@ -126,6 +130,7 @@ export class LocalGitRepoHelper {
 		} else if (GitHubProvider.isGitHubUrl(<string>remoteUrl)) {
 			remoteUrl = GitHubProvider.getFormattedRemoteUrl(<string>remoteUrl);
 		}
+
 		return remoteUrl;
 	}
 
@@ -140,6 +145,7 @@ export class LocalGitRepoHelper {
 		pathToFile: string,
 	): Promise<string> {
 		fs.writeFileSync(pathToFile, content);
+
 		await vscode.workspace.saveAll(true);
 
 		return pathToFile;
@@ -157,6 +163,7 @@ export class LocalGitRepoHelper {
 	): Promise<string> {
 		try {
 			await this.gitReference.add(files);
+
 			await this.gitReference.commit(commitMessage, files);
 
 			let gitLog = await this.gitReference.log();
@@ -209,6 +216,7 @@ export class LocalGitRepoHelper {
 			} catch (error) {
 				// Commit all files if there are not commits on this branch
 				await this.gitReference.add(`:!${filesToExcludeRegex}`);
+
 				await this.gitReference.commit("Initialized git repository");
 			}
 
@@ -247,11 +255,14 @@ export class LocalGitRepoHelper {
 			this,
 			targetFile + ".yml",
 		);
+
 		inputs.pipelineConfiguration.assets[manifestFile] = path
 			.relative(await this.getGitRootDirectory(), manifestFilePath)
 			.split(path.sep)
 			.join("/");
+
 		filesToCommit.push(manifestFilePath);
+
 		await this.addContentToFile(
 			await templateHelper.renderContent(
 				manifestPath + manifestFile + ".yml",
@@ -259,6 +270,7 @@ export class LocalGitRepoHelper {
 			),
 			manifestFilePath,
 		);
+
 		await vscode.window.showTextDocument(vscode.Uri.file(manifestFilePath));
 	}
 

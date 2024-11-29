@@ -43,6 +43,7 @@ export class AzureResourceClient {
 							),
 						);
 				}
+
 			case TargetResourceType.AKS.toLowerCase():
 				return;
 
@@ -71,9 +72,11 @@ export class AzureResourceClient {
 			while (!!nextLink) {
 				let nextResourceListResult =
 					await this.azureRmClient.resources.listNext(nextLink);
+
 				resourceListResult = resourceListResult.concat(
 					nextResourceListResult,
 				);
+
 				nextLink = nextResourceListResult.nextLink;
 			}
 		}
@@ -116,7 +119,9 @@ export class AzureResourceClient {
 			namespaceName +
 			":" +
 			Date.now();
+
 		resource.tags = resource.tags ? resource.tags : {};
+
 		resource.tags = this.ComputeDeploymentResourceTags(
 			resource.tags,
 			deploymentData,
@@ -146,8 +151,11 @@ export class AzureResourceClient {
 				// check if resource tags can be stored in tag Key field
 				if (tagName.length + deploymentData.length < MaxTagKeyLength) {
 					startNewRow = false;
+
 					newTagKey = tagName;
+
 					newTagValue = resourceTags[tagName];
+
 					resourceTags[tagName] = null;
 
 					break;
@@ -158,9 +166,13 @@ export class AzureResourceClient {
 					MaxTagValueLength
 				) {
 					storageColumn = false;
+
 					startNewRow = false;
+
 					newTagKey = tagName;
+
 					newTagValue = resourceTags[tagName];
+
 					resourceTags[tagName] = null;
 
 					break;
@@ -176,6 +188,7 @@ export class AzureResourceClient {
 					tempResourceTags[key] = resourceTags[key];
 				}
 			}
+
 			resourceTags = tempResourceTags;
 		}
 
@@ -183,6 +196,7 @@ export class AzureResourceClient {
 			if (Object.keys(resourceTags).length > MaxTagsRow) {
 				throw new Error(Messages.EmptyTagRowUnavailable);
 			}
+
 			newTagKey = DevopsInfoTagHeader;
 		}
 
