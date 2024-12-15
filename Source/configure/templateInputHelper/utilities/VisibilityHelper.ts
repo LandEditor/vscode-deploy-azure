@@ -49,9 +49,7 @@ export class VisibilityHelper {
 
 		for (
 			let i = 0, len = visibilityRule.predicateRules.length;
-
 			i < len;
-
 			i++
 		) {
 			let predicateRule = visibilityRule.predicateRules[i];
