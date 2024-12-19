@@ -257,7 +257,7 @@ export class GraphHelper {
 				body: {
 					"availableToOtherTenants": false,
 					"displayName": name,
-					"homepage": "https://" + name,
+					"homepage": "HTTPS://" + name,
 					"passwordCredentials": [
 						{
 							"startDate": startDate,
