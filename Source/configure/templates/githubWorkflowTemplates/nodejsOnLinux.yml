@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     # checkout the repo
-    - uses: actions/checkout@master
+    - uses: actions/setup-node@v4.1.0
 
     - uses: azure/login@v1
       with:

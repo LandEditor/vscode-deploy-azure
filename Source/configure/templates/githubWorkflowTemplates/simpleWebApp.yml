@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     # checkout the repo
-    - uses: actions/checkout@master
+    - uses: actions/setup-node@v4.1.0
 
     # deploy web app using publish profile credentials
     - uses: azure/webapps-deploy@v1

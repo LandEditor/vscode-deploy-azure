@@ -9,7 +9,7 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - uses:actions/checkout@v4.2.2
 
     - uses: azure/docker-login@v1
       with:

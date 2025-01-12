@@ -10,7 +10,7 @@ jobs:
     runs-on: windows-2019
     steps:
     # checkout the repo
-    - uses: actions/checkout@master
+    - uses: actions/setup-node@v4.1.0
 
     - uses: actions/setup-node@v1
       with:
